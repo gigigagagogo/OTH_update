@@ -1,0 +1,3 @@
+1) How can program require services or resources? They can do it in user mode?
+2) If you are in user mode how the system call operation work?
+3) What is the goal of a linker? Name 1 language programming that use this technology	

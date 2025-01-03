@@ -1,0 +1,44 @@
+Metacaratteri di Base
+
+    . : Corrisponde a qualsiasi carattere eccetto il carattere di nuova riga (\n).
+    ^ : Corrisponde all'inizio di una stringa.
+    $ : Corrisponde alla fine di una stringa.
+    \ : Utilizzato per fare l'escape di un carattere speciale, rendendolo un carattere letterale. Ad esempio, \. corrisponde al carattere punto ..
+
+Gruppi e Intervalli
+
+    [abc] : Corrisponde a uno qualsiasi dei caratteri tra parentesi (ad esempio, a, b, o c).
+    [^abc] : Corrisponde a qualsiasi carattere tranne quelli specificati (quindi, non a, b, o c).
+    [a-z] : Definisce un intervallo. Corrisponde a qualsiasi carattere nell'intervallo specificato (in questo caso, da a a z).
+    ( ... ) : Gruppi di caratteri che possono essere trattati come singola unità. Ad esempio, (abc) corrisponde a abc.
+    | : OR logico. a|b corrisponde a a oppure b.
+
+Quantificatori
+
+    * : Corrisponde a zero o più occorrenze dell'elemento precedente. Ad esempio, a* corrisponde a sequenze di a (anche nessuna).
+    + : Corrisponde a una o più occorrenze dell'elemento precedente. Ad esempio, a+ corrisponde a una o più a.
+    ? : Corrisponde a zero o una occorrenza dell'elemento precedente, rendendo l'elemento "opzionale". Ad esempio, a? corrisponde a a o a nessun carattere.
+    {n} : Corrisponde esattamente a n occorrenze dell'elemento precedente. Ad esempio, a{3} corrisponde a aaa.
+    {n,} : Corrisponde a n o più occorrenze dell'elemento precedente. Ad esempio, a{2,} corrisponde a aa, aaa, ecc.
+    {n,m} : Corrisponde a un numero di occorrenze compreso tra n e m dell'elemento precedente. Ad esempio, a{2,4} corrisponde a aa, aaa, o aaaa.
+
+Caratteri Speciali e Escape
+
+    \d : Corrisponde a qualsiasi cifra (equivale a [0-9]).
+    \D : Corrisponde a qualsiasi carattere che non è una cifra.
+    \w : Corrisponde a qualsiasi carattere alfanumerico, compreso l'underscore _ (equivale a [a-zA-Z0-9_]).
+    \W : Corrisponde a qualsiasi carattere che non è alfanumerico.
+    \s : Corrisponde a qualsiasi carattere di spaziatura (spazi, tabulazioni, ecc.).
+    \S : Corrisponde a qualsiasi carattere che non è uno spazio.
+
+Ancore
+
+    \b : Indica un confine di parola. Corrisponde al punto in cui termina una parola.
+    \B : Indica un punto che non è un confine di parola.
+
+Lookahead e Lookbehind
+
+    (?=...) : Positive lookahead. Corrisponde a una posizione che è seguita da un pattern specifico.
+    (?!...) : Negative lookahead. Corrisponde a una posizione che non è seguita da un pattern specifico.
+    (?<=...) : Positive lookbehind. Corrisponde a una posizione che è preceduta da un pattern specifico.
+    (?<!...) : Negative lookbehind. Corrisponde a una posizione che non è preceduta da un pattern specifico.

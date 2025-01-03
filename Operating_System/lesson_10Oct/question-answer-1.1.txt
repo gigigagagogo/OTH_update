@@ -1,0 +1,24 @@
+ 1. What’s the purpose of operating system?
+
+To allow people interact with the system without managing computer process. 
+
+2. What are the 5 levels of storage hierachy?
+
+register -> cache -> main memory -> hard-disk drivers -> magnetic tapes
+
+3. What does Multiprogramming Means?
+
+Multiprogramming organises jobs (code and data) so CPU always has one to execute
+
+4. What’s the different between ROM and RAM?
+
+ROM is for permanent data and RAM for getting data fast, but its reset every time we turn of the PC
+
+5. What are the Key characteristics of P2P connections?
+
+ - All nodes are considered peers
+  - May each act as client, server or both
+  - Node must join P2P network
+    - Registers its service with central lookup service on network
+    - Broadcast request for service and respond to requests for service via discovery protocol
+Examples include Napster and Gnutella, Voice over IP (VoIP) such as Skype

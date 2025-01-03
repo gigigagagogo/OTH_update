@@ -1,0 +1,4 @@
+A superkey is a set of attribute(collumn) that have different tuple(rows).
+A key is a superkey but have to be the minimum (e.g. superkey it's like A-B 
+the key can be A or B or if this 2 attribute doesn't have different tuple,
+the superkey A-B is a possibile candidate of key.

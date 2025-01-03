@@ -1,0 +1,39 @@
+1)
+a) Explain the concept of physical data independence and its importance in database systems.
+	With physical data independece we mean the capability of changing the Physical level without 	     touching the Logical one. It is important because some time we just want to optimize the data 	  storage without change something in the Logical Level
+b) List three responsibilities of a database-management system. For each responsibility, explain
+the problems that would arise if the responsibility were not discharged.
+	-Data Security: Ensures only authorized users can access or modify the data.
+	-Concurrency Control: Manages simultaneous data access by multiple users.
+	-Data Backup and Recovery: Ensures data is recoverable in case of failures (e.g., hardware 
+	crash, power outage).
+c) List at least two reasons why database systems support data manipulation using a declarative
+query language such as SQL, instead of just providing a library of C or C++ functions to
+carry out data manipulation.
+	-Ease of Use: SQL allows users to specify what they want without defining how to retrieve it.	     -Optimization by the DBMS: SQL queries are processed and optimized by the DBMS to find the 
+	most efficient execution plan.
+d) Assume that two students are trying to register for a course in which there is only one open
+seat. What component of a database system prevents both students from being given that
+last seat?
+	Boh
+e) Describe at least three tables that might be used to store information in a social- networking
+system such as Facebook.
+	- Friendship relation
+	- Posts relation
+	- User relation
+
+2)
+a) No it'll be a Foreign Key. 
+b)
+	a) Primary key:
+		branch: branch_name
+		customer:Id
+		loan:loan_number
+		borrower:Id
+		account:account_number
+		depositor:Id
+	b) Foreign key:
+		loan: branch_name
+		borrower:loan_number
+		account: branch_name
+		depositor: account_number

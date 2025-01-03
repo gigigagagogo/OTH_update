@@ -1,0 +1,3 @@
+imagine a>5:
+	throw_up ^ciao^
+

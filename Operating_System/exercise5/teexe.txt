@@ -1,0 +1,22 @@
+5.1)
+b) Non-preemptive quando il CPU Scheduler decide dopo una terminazione di un 
+processo o un cambio di stato da running a waiting state. 
+Preemptive quando il CPU scheduler decide dopo che il processo è passato da 
+running a ready o da waiting a ready state.
+
+c)
+I/O bound:More likely to have voluntary context switches.
+Explanation: I/O-bound programs frequently issue I/O requests, during which they transition to a waiting state voluntarily. This allows the CPU to switch to another process without being preempted by the scheduler.
+
+CPU bound: More likely to have non-voluntary context switches.
+Explanation: CPU-bound programs use the CPU intensively until they are forcibly preempted by the scheduler (e.g., when their time quantum expires in a preemptive system). They seldom yield the CPU voluntarily because they rarely wait for I/O operations.
+
+d)Il regressive round-robin scheduler favorisce i processi CPU-bound. Questo perché i processi CPU-bound:
+	-Guadagnano un time quantum maggiore ad ogni ciclo.
+	-Ottengono un incremento della priorità, che li rende più competitivi per l'accesso alla CPU.
+
+e) 
+   - (8+11.6+12)/3 = 10.53
+   - a) 10.53
+     b)(13.4 + 4 + 4.4)/3 =7.27
+   - (14+5.6+1)/3 = 6.87
