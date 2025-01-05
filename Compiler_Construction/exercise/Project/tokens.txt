@@ -1,0 +1,6 @@
+#Commenti: x$  $x
+#Stringhe: gms \n, so \t, cc \x, wt "
+#Numeri: @x 0x
+#Tipi: whole_y int, floaty float, chain string, letter char
+#Istruzioni: imagine if, one_by_one for, as_long_as while
+#Token: go do, all_set done, -> =, throw_up print, send_back return
