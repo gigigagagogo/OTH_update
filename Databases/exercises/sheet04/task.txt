@@ -1,0 +1,19 @@
+2)
+	a) CREATE TABLE r (
+    		id INT,
+    		name VARCHAR(50),
+    		salary INT
+		);
+	 CREATE view condsal AS select * from r where salary >=5000
+	 insert into r (id, name ,salary) values (10, "Pippo", 4000)
+	 select * from v.
+	
+	b) 
+3) 	
+	a) return only rows that are present in the first query
+	b) SELECT s.id
+		FROM student s
+		LEFT JOIN advisor a ON s.id = a.s_id AND a.i_id IS NOT NULL
+		WHERE a.s_id IS NULL;
+4)
+	Una riga in takes non ha una corrispondenza in course o una riga in course non ha una corrispondenza né in takes né in student:

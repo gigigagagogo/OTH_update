@@ -1,0 +1,49 @@
+1)
+	a) with EnrollmentCount AS(select s.course_id, s.sec_id, s.year, s.semester, count(t.ID) AS num from section s join takes t ON 
+						s.course_id = t.course_id AND
+						s.sec_id = t.sec_id AND
+						s.year = t.year AND
+						s.semester = t.semester
+						group by 
+						s.course_id, s.sec_id, s.year, s.semester)
+	select e.course_id, e.sec_id, e.year, e.semester, e.num from EnrollmentCount e where num = (SELECT MAX(num) FROM EnrollmentCount);
+	
+	b)Se ci sono valori NULL nella colonna salary, il risultato non sarà zero. Questo accade perché:
+		AVG(salary):
+    			Considera solo i valori non NULL.
+    			Ignora completamente i valori NULL
+
+		SUM(salary) e COUNT(*):
+    			SUM(salary) somma solo i valori non NULL.
+    			COUNT(*) conta tutte le righe, inclusi quelli con valori NULL.
+		Se non ci sono valori NULL nella colonna salary e il risultato non è esattamente 0, allora il problema potrebbe derivare da approssimazioni
+		numeriche o errori di arrotondamento legati al modo in cui i numeri in virgola mobile sono rappresentati e manipolati nel database.
+2)
+	a) SELECT DISTINCT m.memb_no, m.name
+		FROM member m
+		JOIN borrowed b ON m.memb_no = b.memb_no
+		JOIN book boo ON boo.isbn = b.isbn
+		WHERE boo.publisher = "McGraw-Hill";
+	b) SELECT m.memb_no, m.name
+		FROM member m 
+		JOIN borrowed b ON m.memb_no = b.memb_no
+		JOIN book boo ON boo.isbn = b.isbn
+		WHERE boo.publisher = "McGraw-Hill";
+		GROUP BY m.memb_no, m.name
+		HAVING COUNT(b.isbn) = (
+			SELECT b.isbn from book b where b.publisher = "McGraw-Hill"
+		)	
+	c) SELECT m.memb_no, m.name, boo.publisher
+		FROM member m 
+		JOIN borrowed b ON m.memb_no = b.memb_no
+		JOIN book boo ON boo.isbn = b.isbn
+		GROUP BY m.memb_no, m.name, boo.publisher
+		HAVING COUNT (b.isbn) >= 5
+3)
+	a) La tabella section non introduce nuove informazioni utili per il calcolo di AVG(tot_cred) o per il filtro HAVING COUNT(ID) >= 2
+	b) select * from section inner join classroom using(building, room_number)
+	c) SELECT student.ID
+		FROM student
+		LEFT JOIN takes ON student.ID = takes.ID
+		WHERE takes.ID IS NULL;
+	d) 
