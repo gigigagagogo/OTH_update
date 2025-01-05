@@ -5,10 +5,6 @@
 	#include <ctype.h>
 	#include "parser.tab.h"
 	
-	extern FILE *yyin;
-	extern char *yytext;		
-
-	void addstr(const char* );
 
 %}
 
@@ -23,7 +19,7 @@ OPERATOR [+-/!<>]
 "one_by_one"                    { return T_ONE_BY_ONE; }
 "as_long_as"                    { return T_AS_LONG_AS; }
 "go"                            { return T_GO; }
-"all_set"                       { return T_ALLSET; }
+"all_set"                       { return T_ALL_SET; }
 "throw_up"                      { return T_THROWUP; }
 "->"                            { return T_EQUAL; }
 "!->"				{ return T_NEQUAL; }
@@ -32,10 +28,10 @@ OPERATOR [+-/!<>]
 {DIGIT}                         { yylval.num = atoi(yytext); return T_WHOLEY; }
 "Chain"				{ return T_CHAIN; }
 @x[0-9a-fA-F]+                  { yylval.num = strtol(yytext + 2, NULL, 16); return T_WHOLEY; }
-"\^"                             { BEGIN(STRING); addstr("\0"); }
-<STRING>"\\gms"                 { addstr("\\gms"); }
-<STRING>"\\so"                  { addstr("\\so"); }
-<STRING>"\^"                     { BEGIN(INITIAL); return T_STRING; }
+"\^"                             { BEGIN(STRING); }
+<STRING>"\\gms"                 { yylval.str = strdup(yytext); return T_GMS;}
+<STRING>"\\so"                  { yylval.str = strdup(yytext); return T_SO; }
+<STRING>"\^"                     { BEGIN(INITIAL); return T_STRING_END; }
 "x\$"                            { BEGIN(COMMENT); }
 <COMMENT>[^$]+                  { ; }
 <COMMENT>"\$x"                   { BEGIN(INITIAL); }
@@ -45,98 +41,7 @@ OPERATOR [+-/!<>]
 "<="				{ return T_LEQUAL; }
 %%
 
-void addstr(const char* ch) {
-    if (yylval.str == NULL) {
-        yylval.str = strdup(ch);
-    } else {
-        int l = strlen(yylval.str);
-        yylval.str = realloc(yylval.str, l + strlen(ch) + 1);
-        if (!yylval.str) {
-            fprintf(stderr, "Errore di allocazione della memoria\n");
-            exit(1);
-        }
-        strcat(yylval.str, ch);
-    }
-}
 
-void clear_memory() {
-    if (yylval.str) {
-        free(yylval.str);
-        yylval.str = NULL;
-    }
-    if (yylval.id) {
-        free(yylval.id);
-        yylval.id = NULL;
-    }
-}
-
-int main(int argc, char **argv) {
-    if (argc < 2) {
-        fprintf(stderr, "Uso: %s <file>\n", argv[0]);
-        return 1;
-    }
-
-    FILE *file = fopen(argv[1], "r");
-    if (!file) {
-        perror("Errore apertura file");
-        return 1;
-    }
-
-    yyin = file; // Assegna il file a Flex
-    int token;
-
-    do {
-        token = yylex();
-        switch(token){
-            case T_WHOLEY:
-                printf("Token: WHOLEY, Value: %d\n", yylval.num);
-                break;
-            case T_FLOATY:
-                printf("Token: FLOATY, Value: %f\n", yylval.fnum);
-                break;
-            case T_STRING:
-                printf("Token: STRING, Value: %s\n", yylval.str);
-                break;
-            case T_IDENTIFIER:
-                printf("Token: IDENTIFIER, Value: %s\n", yylval.id);
-                break;
-            case T_IMAGINE:
-                printf("Token: IMAGINE (if)\n");
-                break;
-            case T_ONE_BY_ONE:
-                printf("Token: ONE_BY_ONE (for)\n");
-                break;
-            case T_AS_LONG_AS:
-                printf("Token: AS_LONG_AS (while)\n");
-                break;
-            case T_GO:
-                printf("Token: GO (start block)\n");
-                break;
-            case T_ALLSET:
-                printf("Token: ALL_SET (end block)\n");
-                break;
-            case T_THROWUP:
-                printf("Token: THROW_UP (print)\n");
-                break;
-            case T_SENDBACK:
-                printf("Token: SEND_BACK (return)\n");
-                break;
-            case T_OPERATOR:
-                printf("Token: OPERATOR\n");
-                break;
-            case T_COMMENT:
-                printf("Token: COMMENT\n");
-                break;
-            case T_NEWLINE:
-                printf("Token: NEWLINE\n");
-                break;
-            default:
-                printf("Token sconosciuto: %d\n", token);
-                break;
-        }
-        clear_memory();
-    } while(token != 0);
-
-    fclose(file);
+int main() {
     return 0;
 }
