@@ -1,4 +1,4 @@
-%{
+% START{
 
     #include<stdio.h>
     #include<stdlib.h>
@@ -15,6 +15,16 @@
     int var_set(char *id, int val);
     stack_t *vars;
 
+typedef struct {
+	int type;
+	union {
+	   int i;
+	   double d;
+	   char *s;
+	} u;
+} value_t;
+
+
 %}
 
 %define parse.error verbose
@@ -25,21 +35,21 @@
     char *str;
     char *id;
     char op;
+    value_t val;
 }
 
 %token <num> T_WHOLEY
 %token <fnum> T_FLOATY
-%token <str> T_GMS
-%token <str> T_SO
 %token <id> T_IDENTIFIER
 %token <op> T_OPERATOR
-%token T_SENDBACK T_STRING_END T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_EQUAL T_NEQUAL T_GEQUAL T_LEQUAL T_CHAIN
-%type <num> assignment condition expression statements 
+%token <str> T_STRING
+%token T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_EQUAL T_NEQUAL T_GEQUAL T_LEQUAL T_CHAIN
+%type <val> START assignment condition expression statements 
 %start START
 %%
 
 START:
-    /* empty */
+    %empty { $$ = 0; }
     |START statements { printf("Result: %d\n", $2); }
     ;
 
@@ -68,7 +78,7 @@ for_block:
 
 statements:
     statements statement
-    | statement
+    | %empty {$$ = 0; }
     ;
 
 statement:
@@ -77,9 +87,9 @@ statement:
     ;
 
 assignment:
-    T_IDENTIFIER T_EQUAL expression {
-        $$ = $3; var_set($1, $3);
-    }
+    T_IDENTIFIER T_EQUAL T_WHOLEY { var_set($1, (value_t) {.type = 1, .u.i = $3}); }
+    | T_IDENTIFIER T_EQUAL T_FLOATY { var_set($1, (value_t){.type = 2, .u.d = $3}); }
+    | T_IDENTIFIER T_EQUAL T_STRING { var_set($1, (value_t){.type = 3, .u.s = strdup($3)}); }
     ;
 
 condition:
@@ -90,9 +100,9 @@ expression:
       T_WHOLEY { $$ = $1; }
     | T_FLOATY { $$ = (int)$1; }
     | T_IDENTIFIER { $$ = var_get($1); }
-    | T_IDENTIFIER T_NEQUAL expression { $$ = $1 != $3; }
-    | T_IDENTIFIER T_GEQUAL expression { $$ = $1 >= $3; }
-    | T_IDENTIFIER T_LEQUAL expression { $$ = $1 <= $3; }
+    | T_IDENTIFIER T_NEQUAL expression { $$ = var_get($1) != $3; }
+    | T_IDENTIFIER T_GEQUAL expression { $$ = var_get($1) >= $3; }
+    | T_IDENTIFIER T_LEQUAL expression { $$ = var_get($1) <= $3; }
     | T_IDENTIFIER T_OPERATOR expression {
 	switch ($2) { // Usa $2 direttamente come char
             case '+': $$ = $1 + $3; break;
@@ -113,18 +123,19 @@ expression:
 %%
 
 int var_get(char *id) {
-    val_t *v = s_lookup(vars, id);
-    return v == NULL ? 0 : v->val;
+    value_t *v = s_lookup(vars, id);
+    return v == NULL ? 0 : v->u.i;
 }
 
-int var_set(char *id, int val) {
-    val_t *v = s_lookup(vars, id);
+int var_set(char *id, value_t val) {
+    value_t *v = s_lookup(vars, id);
     if (v == NULL) {
-        s_push(vars, (val_t){strdup(id), val});
+        s_push(vars, (value_t){strdup(id), val});
     } else {
-        v->val = val;
+        v -> type = val.type;
+	v -> u = val.u;
     }
-    return val;
+    return val.u.i;
 }
 
 void yyerror(const char *s) {

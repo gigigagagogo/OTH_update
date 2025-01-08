@@ -4,6 +4,28 @@
 	#include <string.h>
 	#include <ctype.h>
 	#include "parser.tab.h"
+
+	// Buffer per accumulare stringhe multi-carattere
+	char *current_string = NULL;
+
+	// Funzione per resettare il buffer della stringa
+	void reset_string_buffer() {
+		if (current_string) {
+			free(current_string);
+			current_string = NULL;
+		}
+	}
+
+	// Funzione per aggiungere frammenti al buffer
+	void append_to_string(const char *fragment) {
+		if (!current_string) {
+			current_string = strdup(fragment);
+		} else {
+			size_t len = strlen(current_string) + strlen(fragment) + 1;
+			current_string = realloc(current_string, len);
+			strcat(current_string, fragment);
+		}
+	}
 	
 
 %}
@@ -28,13 +50,19 @@ OPERATOR [+-/!<>]
 {DIGIT}                         { yylval.num = atoi(yytext); return T_WHOLEY; }
 "Chain"				{ return T_CHAIN; }
 @x[0-9a-fA-F]+                  { yylval.num = strtol(yytext + 2, NULL, 16); return T_WHOLEY; }
-"\^"                             { BEGIN(STRING); }
-<STRING>"\\gms"                 { yylval.str = strdup(yytext); return T_GMS;}
-<STRING>"\\so"                  { yylval.str = strdup(yytext); return T_SO; }
-<STRING>"\^"                     { BEGIN(INITIAL); return T_STRING_END; }
-"x\$"                            { BEGIN(COMMENT); }
+"\^"                            { BEGIN(STRING); reset_string_buffer(); }
+<STRING>[^\\^]+			{ append_to_string(yytext);}
+<STRING>"\\gms"                 { append_to_string("\n");}
+<STRING>"\\so"                  { append_to_string("\t"); }
+<STRING>"\^"                    { 
+					yylval.str= current_string;
+					current_string = NULL;
+					BEGIN(INITIAL);
+					return T_STRING;
+				}
+"x\$"                           { BEGIN(COMMENT); }
 <COMMENT>[^$]+                  { ; }
-<COMMENT>"\$x"                   { BEGIN(INITIAL); }
+<COMMENT>"\$x"                  { BEGIN(INITIAL); }
 [a-zA-Z][_a-zA-Z0-9]*           { yylval.id = strdup(yytext); return T_IDENTIFIER; }
 {OPERATOR}			{ return T_OPERATOR; }
 "=>"				{ return T_GEQUAL; }

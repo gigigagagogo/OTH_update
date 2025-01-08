@@ -56,24 +56,22 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     T_WHOLEY = 258,                /* T_WHOLEY  */
     T_FLOATY = 259,                /* T_FLOATY  */
-    T_GMS = 260,                   /* T_GMS  */
-    T_SO = 261,                    /* T_SO  */
-    T_IDENTIFIER = 262,            /* T_IDENTIFIER  */
-    T_OPERATOR = 263,              /* T_OPERATOR  */
-    T_SENDBACK = 264,              /* T_SENDBACK  */
-    T_STRING_END = 265,            /* T_STRING_END  */
-    T_THROWUP = 266,               /* T_THROWUP  */
-    T_GO = 267,                    /* T_GO  */
-    T_ALL_SET = 268,               /* T_ALL_SET  */
-    T_IMAGINE = 269,               /* T_IMAGINE  */
-    T_NAH = 270,                   /* T_NAH  */
-    T_ONE_BY_ONE = 271,            /* T_ONE_BY_ONE  */
-    T_AS_LONG_AS = 272,            /* T_AS_LONG_AS  */
-    T_EQUAL = 273,                 /* T_EQUAL  */
-    T_NEQUAL = 274,                /* T_NEQUAL  */
-    T_GEQUAL = 275,                /* T_GEQUAL  */
-    T_LEQUAL = 276,                /* T_LEQUAL  */
-    T_CHAIN = 277                  /* T_CHAIN  */
+    T_IDENTIFIER = 260,            /* T_IDENTIFIER  */
+    T_OPERATOR = 261,              /* T_OPERATOR  */
+    T_STRING = 262,                /* T_STRING  */
+    T_SENDBACK = 263,              /* T_SENDBACK  */
+    T_THROWUP = 264,               /* T_THROWUP  */
+    T_GO = 265,                    /* T_GO  */
+    T_ALL_SET = 266,               /* T_ALL_SET  */
+    T_IMAGINE = 267,               /* T_IMAGINE  */
+    T_NAH = 268,                   /* T_NAH  */
+    T_ONE_BY_ONE = 269,            /* T_ONE_BY_ONE  */
+    T_AS_LONG_AS = 270,            /* T_AS_LONG_AS  */
+    T_EQUAL = 271,                 /* T_EQUAL  */
+    T_NEQUAL = 272,                /* T_NEQUAL  */
+    T_GEQUAL = 273,                /* T_GEQUAL  */
+    T_LEQUAL = 274,                /* T_LEQUAL  */
+    T_CHAIN = 275                  /* T_CHAIN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -82,15 +80,16 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 22 "parser.y"
+#line 32 "parser.y"
 
     int num;
     double fnum;
     char *str;
     char *id;
     char op;
+    value_t val;
 
-#line 94 "parser.tab.h"
+#line 93 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
