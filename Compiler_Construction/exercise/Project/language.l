@@ -3,8 +3,9 @@
 	#include <stdlib.h>
 	#include <string.h>
 	#include <ctype.h>
+	#include "types.h"
 	#include "parser.tab.h"
-
+	
 	// Buffer per accumulare stringhe multi-carattere
 	char *current_string = NULL;
 
@@ -46,9 +47,23 @@ OPERATOR [+-/!<>]
 "->"                            { return T_EQUAL; }
 "!->"				{ return T_NEQUAL; }
 "send_back"                     { return T_SENDBACK; }
+"in"				{ return T_IN; }
+"a_new_one"			{ return T_A_NEW_ONE; }
+"("				{ return T_LPAREN; }
+")" 				{ return T_RPAREN; }
+"{"				{ return T_LCURPAR; }
+"}"				{ return T_RCURPAR; }
+","				{ return T_COMMA; }
+"zip"				{ return T_ZIP; }
+"check"				{ return T_CHECK; }
+"is"				{ return T_IS; }
+":"				{ return T_COLON; }
+"default"			{ return T_DEFAULT; }
+"whole_y"			{ return T_WHOLEY_TYPE; }
+"floaty"			{ return T_FLOATY_TYPE; }	
+"chain"				{ return T_STRING_TYPE; }
 {DIGIT}"."{DIGIT}               { yylval.fnum = atof(yytext); return T_FLOATY; }
 {DIGIT}                         { yylval.num = atoi(yytext); return T_WHOLEY; }
-"Chain"				{ return T_CHAIN; }
 @x[0-9a-fA-F]+                  { yylval.num = strtol(yytext + 2, NULL, 16); return T_WHOLEY; }
 "\^"                            { BEGIN(STRING); reset_string_buffer(); }
 <STRING>[^\\^]+			{ append_to_string(yytext);}
@@ -70,6 +85,3 @@ OPERATOR [+-/!<>]
 %%
 
 
-int main() {
-    return 0;
-}

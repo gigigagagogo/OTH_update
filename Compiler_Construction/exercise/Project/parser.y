@@ -1,28 +1,20 @@
-% START{
+%{
 
-    #include<stdio.h>
-    #include<stdlib.h>
-    #include<string.h>
-    #include"stack.h"
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
+    #include "stack.h"
+    #include "types.h"
+
 
     int yydebug = 1;
     extern int yylineno;
 
-    void yyerror (const char *msg); // gestisci e segnala errori di parsing
-
+    void yyerror (const char *msg); 
     int yylex(void);
     int var_get(char *id);
     int var_set(char *id, int val);
     stack_t *vars;
-
-typedef struct {
-	int type;
-	union {
-	   int i;
-	   double d;
-	   char *s;
-	} u;
-} value_t;
 
 
 %}
@@ -38,90 +30,110 @@ typedef struct {
     value_t val;
 }
 
-%token <num> T_WHOLEY
-%token <fnum> T_FLOATY
-%token <id> T_IDENTIFIER
-%token <op> T_OPERATOR
-%token <str> T_STRING
-%token T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_EQUAL T_NEQUAL T_GEQUAL T_LEQUAL T_CHAIN
-%type <val> START assignment condition expression statements 
+%token  T_WHOLEY
+%token  T_FLOATY
+%token  T_IDENTIFIER
+%token   T_OPERATOR
+%token  T_STRING
+%token T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_EQUAL T_NEQUAL T_GEQUAL T_LEQUAL T_CHAIN T_IN T_LPAREN T_RPAREN T_LCURPAR T_RCURPAR T_A_NEW_ONE 
+T_ZIP T_CHECK T_IS T_COLON T_DEFAULT T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE
 %start START
 %%
 
 START:
-    %empty { $$ = 0; }
-    |START statements { printf("Result: %d\n", $2); }
+     %empty 
+    |START statements    
     ;
 
 block:
-    T_GO control_block T_ALL_SET
+     T_GO control_block T_ALL_SET
     ;
 
 control_block:
-      if_block
+	     if_block
     | while_block
     | for_block
+    | switch_case
     ;
 
 if_block:
-    T_IMAGINE '(' condition ')' '{' statements '}'
-    | T_IMAGINE '(' condition ')' '{' statements '}' T_NAH '{' statements '}'
+	T_IMAGINE T_LPAREN  condition T_RPAREN T_LCURPAR statements T_RCURPAR
+    | T_IMAGINE T_LPAREN condition T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
     ;
 
 while_block:
-    T_AS_LONG_AS '(' condition ')' '{' statements '}'
+	   T_AS_LONG_AS T_LPAREN condition T_RPAREN T_LCURPAR statements T_RCURPAR
     ;
 
 for_block:
-    T_ONE_BY_ONE '(' assignment ';' condition ';' assignment ')' '{' statements '}'
-    ;
+	 T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+	; 
+
+optional_step:
+	     ',' expression
+	     | %empty
+	     ;
 
 statements:
-    statements statement
-    | %empty {$$ = 0; }
+	  statements statement
+    | %empty      
     ;
 
 statement:
-    assignment ';'
+	 assignment ';'
     | block
     ;
 
 assignment:
-    T_IDENTIFIER T_EQUAL T_WHOLEY { var_set($1, (value_t) {.type = 1, .u.i = $3}); }
-    | T_IDENTIFIER T_EQUAL T_FLOATY { var_set($1, (value_t){.type = 2, .u.d = $3}); }
-    | T_IDENTIFIER T_EQUAL T_STRING { var_set($1, (value_t){.type = 3, .u.s = strdup($3)}); }
+      T_IDENTIFIER T_EQUAL expression
+      T_WHOLEY_TYPE  T_IDENTIFIER T_EQUAL expression
+    | T_FLOATY_TYPE T_IDENTIFIER T_EQUAL expression 
+    | T_STRING_TYPE T_IDENTIFIER T_EQUAL expression     
     ;
 
 condition:
-    expression
+	 expression
     ;
 
 expression:
-      T_WHOLEY { $$ = $1; }
-    | T_FLOATY { $$ = (int)$1; }
-    | T_IDENTIFIER { $$ = var_get($1); }
-    | T_IDENTIFIER T_NEQUAL expression { $$ = var_get($1) != $3; }
-    | T_IDENTIFIER T_GEQUAL expression { $$ = var_get($1) >= $3; }
-    | T_IDENTIFIER T_LEQUAL expression { $$ = var_get($1) <= $3; }
-    | T_IDENTIFIER T_OPERATOR expression {
-	switch ($2) { // Usa $2 direttamente come char
-            case '+': $$ = $1 + $3; break;
-            case '-': $$ = $1 - $3; break;
-            case '*': $$ = $1 * $3; break;
-            case '/':
-                if ($3 == 0) {
-                    yyerror("Divisione per zero");
-                    YYABORT;
-                }
-                $$ = $1 / $3; break;
-        }    
-    }
-    | '(' expression ')' { $$ = $2; }
-    | '$' expression '$' { $$ = $2; }
-    ;
+	  T_WHOLEY     
+    | T_FLOATY 
+    | T_ZIP
+    | T_CHAIN
+    | T_IDENTIFIER 
+    | T_IDENTIFIER T_NEQUAL expression
+    | T_IDENTIFIER T_GEQUAL expression
+    | T_IDENTIFIER T_LEQUAL expression 
+    | T_IDENTIFIER T_OPERATOR expression
 
+function_def:
+	    T_A_NEW_ONE expression T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
+	;
+function_call:
+	     T_IDENTIFIER T_LPAREN arg_list T_RPAREN
+	;
+param_list:
+	  expression T_IDENTIFIER
+	  | param_list T_COMMA expression T_IDENTIFIER
+	  | %empty
+	  ;
+arg_list:
+	expression 
+	| arg_list T_COMMA expression
+	| %empty
+	;
+switch_case:
+	 T_CHECK expression T_LCURPAR case_list T_RCURPAR
+	 ;
+
+case_list:
+	 case_list T_IS expression T_COLON statements
+	 | T_DEFAULT T_COLON statements
+	 | %empty
+	 ;
 %%
 
+/*
 int var_get(char *id) {
     value_t *v = s_lookup(vars, id);
     return v == NULL ? 0 : v->u.i;
@@ -130,20 +142,20 @@ int var_get(char *id) {
 int var_set(char *id, value_t val) {
     value_t *v = s_lookup(vars, id);
     if (v == NULL) {
-        s_push(vars, (value_t){strdup(id), val});
+	s_push(vars, (value_t){strdup(id), val});
     } else {
-        v -> type = val.type;
+	v -> type = val.type;
 	v -> u = val.u;
     }
     return val.u.i;
 }
-
+*/
 void yyerror(const char *s) {
     fprintf(stderr, "Errore alla riga %d: %s\n", yylineno, s);
 }
 
 int main() {
-    vars = s_new();
+   
     printf("Inizio parsing...\n");
     yyparse();
     return 0;

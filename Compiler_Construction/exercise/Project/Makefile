@@ -15,7 +15,7 @@ CC = gcc
 CFLAGS = -Wall -g
 
 # Regole principali
-all: $(TARGET)
+all: clean $(TARGET)
 
 # Regola per creare l'eseguibile
 $(TARGET): $(LEX_C) $(YACC_C)
