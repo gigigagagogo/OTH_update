@@ -1,4 +1,13 @@
 5.1)
+a) n! :
+example n=3
+n! = 3! = 6
+P1 P2 P3
+P1 P2 P3
+P2 P1 P3
+P2 P3 P1
+P3 P1 P2
+P3 P2 P1 
 b) Non-preemptive quando il CPU Scheduler decide dopo una terminazione di un 
 processo o un cambio di stato da running a waiting state. 
 Preemptive quando il CPU scheduler decide dopo che il processo è passato da 
@@ -11,12 +20,49 @@ Explanation: I/O-bound programs frequently issue I/O requests, during which they
 CPU bound: More likely to have non-voluntary context switches.
 Explanation: CPU-bound programs use the CPU intensively until they are forcibly preempted by the scheduler (e.g., when their time quantum expires in a preemptive system). They seldom yield the CPU voluntarily because they rarely wait for I/O operations.
 
+5.2)
+formula = tau_(n+1) = alpha * tau_(n) + (1- alpha)*tau_(n)
+
+
 d)Il regressive round-robin scheduler favorisce i processi CPU-bound. Questo perché i processi CPU-bound:
 	-Guadagnano un time quantum maggiore ad ogni ciclo.
 	-Ottengono un incremento della priorità, che li rende più competitivi per l'accesso alla CPU.
+
+5.4)
+Turnaround Time = Completion Time−Arrival Time
+a) Turnaround Time=Completion Time−Arrival Time
+Ordine esecuzione: P1 (0-8ms) -> P2 (8ms-9ms) -> P3 (9ms-13ms)
+
+P1 = 8-0 = 8ms
+P2 = 12-0.4 = 11.6ms
+P3 = 13-1 = 12ms
+avg. turnaround time = (P1 + P2 + P3)/3 = 10.53ms 
+
+b) 
+nonpreemptive:
+L'algoritmo SJF non-preemptive esegue il processo con il tempo di burst più breve, ma solo quando il processo in esecuzione termina.
+(Inizia P1 perché al tempo 0 non ce nessun altro nella ready queue)
+Ordine esecuzione: P1 (0-8ms) -> P3 (8ms-9ms) -> P2 (9ms-13ms)
+P1 = 8-0 = 8ms 
+P3 = 9-1 = 8ms 
+P2 = 13-0.4 = 12.6
+
+avg. turnaround time = (P1 + P3 + P2)/3 = 9.53ms
+
+preemptive:
+Con l'algoritmo SJF preemptive, la CPU passa al processo con il tempo di burst rimanente più breve in ogni momento. Se arriva un nuovo processo con un burst più breve, il processo in esecuzione viene interrotto (preempted).
+Ordine esecuzione: P1 (0-0.4ms) -> P2 (0.4-1ms) -> P3 (1-2ms) -> P2 (2-5.4ms) -> P1 (5.4-13ms)
+
+P1 = 13-0 = 13ms
+P2 = 5.4 - 0.4 = 5ms
+P3 = 2-1 = 1ms
+
+avg. turnaround time = (P1 + P2 + P3)/3 = 6.87ms  
+
 
 e) 
    - (8+11.6+12)/3 = 10.53
    - a) 10.53
      b)(13.4 + 4 + 4.4)/3 =7.27
    - (14+5.6+1)/3 = 6.87
+

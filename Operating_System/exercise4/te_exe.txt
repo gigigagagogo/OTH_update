@@ -3,6 +3,7 @@ a) Which of the following components of program state are shared across threads 
 	-Heap memory - Yes
 	-Global variables - Yes
 	-Stack memory - No
+Ogni thread ha il proprio registro, stack e PC. Il resto è condivido
 b) A system with two dual-core processors has four processors available for scheduling. A CPU-
 intensive application is running on this system. All input is performed at program start-up,
 when a single file must be opened. Similarly, all output is performed just before the program
@@ -17,6 +18,10 @@ one-to-one threading model (each user thread maps to a kernel thread).
 	2 thread cosi da poter parallelizzare il lavoro.
 
 c)
+  - Not all cores are fully utilized because the number of kernel threads is less than the available cores.
+  - Each processing core is matched to one kernel thread, ensuring efficient utilization of all cores.
+  - Kernel threads compete for the processing cores, leading to context switching at the kernel level.
+Ogni core esegue un kernel thread
 
 4.4 b)
 	- 6 processi
