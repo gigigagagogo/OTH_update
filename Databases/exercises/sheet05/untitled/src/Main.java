@@ -1,30 +1,61 @@
-import java.sql.*;
 import java.util.Scanner;
-
+import java.sql.*;
 
 public class Main {
-    public static String url = "jdbc:postgresql://hera.hs-regensburg.de:5432/bar31549";
-    public static String username="bar31549";
+    static Scanner sc = new Scanner(System.in);
     public static void main(String[] args) {
-        String pass;
-        Scanner scan = new Scanner(System.in);
-        pass = scan.nextLine();
-        dbConnection(url,username,pass);
+        System.out.println("user and password:");
+
+        String user = "bar31549";
+        String password = "bar31549";
+        String host = "jdbc:postgresql://hera.hs-regensburg.de:5432/" + user;
+        connection(host,user,password);
+
     }
 
-    public static void dbConnection(String url, String username, String password){
-        try(Connection cont = DriverManager.getConnection(url,username,password);
-            Statement stat= cont.createStatement();
-        ){
-            ResultSet set = stat.executeQuery("SELECT name FROM instructor");
-
-            while (set.next()){
-                System.out.println(set.getString("name"));
+    public static void connection(String dbid, String userid, String pass) {
+        try{
+            Connection conn = DriverManager.getConnection(dbid, userid, pass);
+            PreparedStatement pstmt;
+            ResultSet result;
+            System.out.println("Inserisci un instructor name:");
+            String nome = sc.nextLine();
+            pstmt = conn.prepareStatement("SELECT i.id, i.name from instructor i where i.name like ?");
+            pstmt.setString(1,"%" + nome + "%");
+            result = pstmt.executeQuery();
+            while (result.next()) {
+                System.out.print(result.getString("id"));
+                System.out.print(" ");
+                System.out.println(result.getString("name"));
             }
-            
-        }catch(SQLException e){
-            System.out.println("Exception: " + e);
-
+            System.out.println("Inserisci un instructor id:");
+            String id = sc.nextLine();
+            pstmt = conn.prepareStatement("SELECT * from instructor i where i.id like ?");
+            pstmt.setString(1,"%" + id + "%");
+            result = pstmt.executeQuery();
+            if(!result.next()) {
+                System.out.println("No instructor found");
+            }else {
+                pstmt = conn.prepareStatement("SELECT distinct i.id, i.course_id, i.year, i.semester  from teaches i where i.id like ?");
+                pstmt.setString(1,"%" + id + "%");
+                result = pstmt.executeQuery();
+                if (!result.next()) {
+                    System.out.println("Instructor no teach!");
+                }else{
+                    while (result.next()) {
+                        System.out.print(result.getString("course_id"));
+                        System.out.print(" ");
+                        System.out.println(result.getString("year"));
+                        System.out.print(" ");
+                        System.out.println(result.getString("semester"));
+                    }
+                }
+            }
+            conn.close();
+            result.close();
+            pstmt.close();
+        }catch (SQLException e){
+            e.printStackTrace();
         }
     }
 
