@@ -1,0 +1,10 @@
+6.3)
+SJF and Priority Scheduling
+
+6.5
+FCFS - I contro sono che dato che l'algoritmo esegue i processi in ordine di come gli arrivano se i primi processi sono molto lunghi
+	e quelli corti vanno infondo alla ready queue potrebbe essere che questi debbanno aspettare molto tempo. I pro sono che 
+	se quelli corti capitano all'inizio vengono eseguiti subito e velocemente
+RR - I pro e i contro dipendono dal time quantum. Se il time quantum è minore rispetto al tempo dei processi brevi questo algoritmo
+	potrebbe causare molti context switch che rallentano il processo 
+Multilevel feedback queues - Qua i processi possono muoversi tra le priority queue quindi non hanno problemi anche se durano poco
