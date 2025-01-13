@@ -30,20 +30,28 @@
     value_t val;
 }
 
+%left T_OPERATOR
 %token  T_WHOLEY
 %token  T_FLOATY
 %token  T_IDENTIFIER
 %token   T_OPERATOR
 %token  T_STRING
-%token T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_EQUAL T_NEQUAL T_GEQUAL T_LEQUAL T_CHAIN T_IN T_LPAREN T_RPAREN T_LCURPAR T_RCURPAR T_A_NEW_ONE 
+%token T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_EQUAL T_NEQUAL T_GEQUAL T_LEQUAL T_IN T_LPAREN T_RPAREN T_LCURPAR T_RCURPAR T_A_NEW_ONE 
 T_ZIP T_CHECK T_IS T_COLON T_DEFAULT T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE
+%nonassoc T_EQUAL T_NEQUAL T_GEQUAL T_LEQUAL
 %start START
 %%
 
 START:
-     %empty 
-    |START statements    
+	global_declaration     
+    | START global_declaration
     ;
+
+global_declaration:
+    function_def
+    | statements ';'
+    ;
+
 
 block:
      T_GO control_block T_ALL_SET
@@ -75,20 +83,23 @@ optional_step:
 	     ;
 
 statements:
-	  statements statement
-    | %empty      
+	  statement
+	  |statements statement      
     ;
 
 statement:
 	 assignment ';'
+    | function_call ';'
     | block
+    | T_SENDBACK expression ';'    
+    | T_THROWUP expression ';'    
     ;
 
 assignment:
-      T_IDENTIFIER T_EQUAL expression
-      T_WHOLEY_TYPE  T_IDENTIFIER T_EQUAL expression
-    | T_FLOATY_TYPE T_IDENTIFIER T_EQUAL expression 
-    | T_STRING_TYPE T_IDENTIFIER T_EQUAL expression     
+      T_IDENTIFIER T_EQUAL expression ';'
+      T_WHOLEY_TYPE  T_IDENTIFIER T_EQUAL expression ';'
+    | T_FLOATY_TYPE T_IDENTIFIER T_EQUAL expression ';'
+    | T_STRING_TYPE T_IDENTIFIER T_EQUAL expression ';'    
     ;
 
 condition:
@@ -99,7 +110,7 @@ expression:
 	  T_WHOLEY     
     | T_FLOATY 
     | T_ZIP
-    | T_CHAIN
+    | T_STRING
     | T_IDENTIFIER 
     | T_IDENTIFIER T_NEQUAL expression
     | T_IDENTIFIER T_GEQUAL expression

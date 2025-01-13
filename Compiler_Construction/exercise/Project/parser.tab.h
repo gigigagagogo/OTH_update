@@ -71,22 +71,21 @@ extern int yydebug;
     T_NEQUAL = 272,                /* T_NEQUAL  */
     T_GEQUAL = 273,                /* T_GEQUAL  */
     T_LEQUAL = 274,                /* T_LEQUAL  */
-    T_CHAIN = 275,                 /* T_CHAIN  */
-    T_IN = 276,                    /* T_IN  */
-    T_LPAREN = 277,                /* T_LPAREN  */
-    T_RPAREN = 278,                /* T_RPAREN  */
-    T_LCURPAR = 279,               /* T_LCURPAR  */
-    T_RCURPAR = 280,               /* T_RCURPAR  */
-    T_A_NEW_ONE = 281,             /* T_A_NEW_ONE  */
-    T_ZIP = 282,                   /* T_ZIP  */
-    T_CHECK = 283,                 /* T_CHECK  */
-    T_IS = 284,                    /* T_IS  */
-    T_COLON = 285,                 /* T_COLON  */
-    T_DEFAULT = 286,               /* T_DEFAULT  */
-    T_COMMA = 287,                 /* T_COMMA  */
-    T_WHOLEY_TYPE = 288,           /* T_WHOLEY_TYPE  */
-    T_FLOATY_TYPE = 289,           /* T_FLOATY_TYPE  */
-    T_STRING_TYPE = 290            /* T_STRING_TYPE  */
+    T_IN = 275,                    /* T_IN  */
+    T_LPAREN = 276,                /* T_LPAREN  */
+    T_RPAREN = 277,                /* T_RPAREN  */
+    T_LCURPAR = 278,               /* T_LCURPAR  */
+    T_RCURPAR = 279,               /* T_RCURPAR  */
+    T_A_NEW_ONE = 280,             /* T_A_NEW_ONE  */
+    T_ZIP = 281,                   /* T_ZIP  */
+    T_CHECK = 282,                 /* T_CHECK  */
+    T_IS = 283,                    /* T_IS  */
+    T_COLON = 284,                 /* T_COLON  */
+    T_DEFAULT = 285,               /* T_DEFAULT  */
+    T_COMMA = 286,                 /* T_COMMA  */
+    T_WHOLEY_TYPE = 287,           /* T_WHOLEY_TYPE  */
+    T_FLOATY_TYPE = 288,           /* T_FLOATY_TYPE  */
+    T_STRING_TYPE = 289            /* T_STRING_TYPE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -104,7 +103,7 @@ union YYSTYPE
     char op;
     value_t val;
 
-#line 108 "parser.tab.h"
+#line 107 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
