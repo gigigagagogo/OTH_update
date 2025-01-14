@@ -54,7 +54,7 @@ OPERATOR [+-/!<>]
 "{"				{ return T_LCURPAR; }
 "}"				{ return T_RCURPAR; }
 ","				{ return T_COMMA; }
-"zip"				{ return T_ZIP; }
+"zip"				{ return T_ZIP_TYPE; }
 "check"				{ return T_CHECK; }
 "is"				{ return T_IS; }
 ":"				{ return T_COLON; }

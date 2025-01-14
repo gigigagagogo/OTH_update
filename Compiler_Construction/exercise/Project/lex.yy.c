@@ -975,7 +975,7 @@ YY_RULE_SETUP
 case 18:
 YY_RULE_SETUP
 #line 57 "language.l"
-{ return T_ZIP; }
+{ return T_ZIP_TYPE; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
