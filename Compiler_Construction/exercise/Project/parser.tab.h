@@ -57,35 +57,40 @@ extern int yydebug;
     T_WHOLEY = 258,                /* T_WHOLEY  */
     T_FLOATY = 259,                /* T_FLOATY  */
     T_IDENTIFIER = 260,            /* T_IDENTIFIER  */
-    T_OPERATOR = 261,              /* T_OPERATOR  */
-    T_STRING = 262,                /* T_STRING  */
-    T_SENDBACK = 263,              /* T_SENDBACK  */
-    T_THROWUP = 264,               /* T_THROWUP  */
-    T_GO = 265,                    /* T_GO  */
-    T_ALL_SET = 266,               /* T_ALL_SET  */
-    T_IMAGINE = 267,               /* T_IMAGINE  */
-    T_NAH = 268,                   /* T_NAH  */
-    T_ONE_BY_ONE = 269,            /* T_ONE_BY_ONE  */
-    T_AS_LONG_AS = 270,            /* T_AS_LONG_AS  */
-    T_EQUAL = 271,                 /* T_EQUAL  */
-    T_NEQUAL = 272,                /* T_NEQUAL  */
-    T_GEQUAL = 273,                /* T_GEQUAL  */
-    T_LEQUAL = 274,                /* T_LEQUAL  */
-    T_IN = 275,                    /* T_IN  */
-    T_LPAREN = 276,                /* T_LPAREN  */
-    T_RPAREN = 277,                /* T_RPAREN  */
-    T_LCURPAR = 278,               /* T_LCURPAR  */
-    T_RCURPAR = 279,               /* T_RCURPAR  */
-    T_A_NEW_ONE = 280,             /* T_A_NEW_ONE  */
-    T_ZIP_TYPE = 281,              /* T_ZIP_TYPE  */
-    T_CHECK = 282,                 /* T_CHECK  */
-    T_IS = 283,                    /* T_IS  */
-    T_COLON = 284,                 /* T_COLON  */
-    T_DEFAULT = 285,               /* T_DEFAULT  */
-    T_COMMA = 286,                 /* T_COMMA  */
-    T_WHOLEY_TYPE = 287,           /* T_WHOLEY_TYPE  */
-    T_FLOATY_TYPE = 288,           /* T_FLOATY_TYPE  */
-    T_STRING_TYPE = 289            /* T_STRING_TYPE  */
+    T_STRING = 261,                /* T_STRING  */
+    T_PLUS = 262,                  /* T_PLUS  */
+    T_MINUS = 263,                 /* T_MINUS  */
+    T_MULTIPLY = 264,              /* T_MULTIPLY  */
+    T_DIVIDE = 265,                /* T_DIVIDE  */
+    T_LESS = 266,                  /* T_LESS  */
+    T_GREATER = 267,               /* T_GREATER  */
+    T_GEQUAL = 268,                /* T_GEQUAL  */
+    T_LEQUAL = 269,                /* T_LEQUAL  */
+    T_SENDBACK = 270,              /* T_SENDBACK  */
+    T_THROWUP = 271,               /* T_THROWUP  */
+    T_GO = 272,                    /* T_GO  */
+    T_ALL_SET = 273,               /* T_ALL_SET  */
+    T_IMAGINE = 274,               /* T_IMAGINE  */
+    T_NAH = 275,                   /* T_NAH  */
+    T_ONE_BY_ONE = 276,            /* T_ONE_BY_ONE  */
+    T_AS_LONG_AS = 277,            /* T_AS_LONG_AS  */
+    T_IN = 278,                    /* T_IN  */
+    T_LPAREN = 279,                /* T_LPAREN  */
+    T_RPAREN = 280,                /* T_RPAREN  */
+    T_LCURPAR = 281,               /* T_LCURPAR  */
+    T_RCURPAR = 282,               /* T_RCURPAR  */
+    T_A_NEW_ONE = 283,             /* T_A_NEW_ONE  */
+    T_ZIP_TYPE = 284,              /* T_ZIP_TYPE  */
+    T_CHECK = 285,                 /* T_CHECK  */
+    T_IS = 286,                    /* T_IS  */
+    T_COLON = 287,                 /* T_COLON  */
+    T_DEFAULT = 288,               /* T_DEFAULT  */
+    T_COMMA = 289,                 /* T_COMMA  */
+    T_WHOLEY_TYPE = 290,           /* T_WHOLEY_TYPE  */
+    T_FLOATY_TYPE = 291,           /* T_FLOATY_TYPE  */
+    T_STRING_TYPE = 292,           /* T_STRING_TYPE  */
+    T_EQUAL = 293,                 /* T_EQUAL  */
+    T_NEQUAL = 294                 /* T_NEQUAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -94,7 +99,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 65 "parser.y"
+#line 67 "parser.y"
 
     int num;
     double fnum;
@@ -104,7 +109,7 @@ union YYSTYPE
     value_t val;
     ast_type *ast;
 
-#line 108 "parser.tab.h"
+#line 113 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
