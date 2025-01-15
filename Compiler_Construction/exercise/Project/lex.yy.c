@@ -1082,7 +1082,7 @@ YY_RULE_SETUP
 case 38:
 YY_RULE_SETUP
 #line 82 "language.l"
-{ return T_OPERATOR; }
+{ yylval.op = yytext[0]; return T_OPERATOR; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP

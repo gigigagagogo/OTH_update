@@ -79,7 +79,7 @@ OPERATOR [+-/!<>]
 <COMMENT>[^$]+                  { ; }
 <COMMENT>"\$x"                  { BEGIN(INITIAL); }
 [a-zA-Z][_a-zA-Z0-9]*           { yylval.id = strdup(yytext); return T_IDENTIFIER; }
-{OPERATOR}			{ return T_OPERATOR; }
+{OPERATOR}			{ yylval.op = yytext[0]; return T_OPERATOR; }
 "=>"				{ return T_GEQUAL; }
 "<="				{ return T_LEQUAL; }
 %%
