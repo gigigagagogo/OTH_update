@@ -1,0 +1,16 @@
+1)
+	a) String : p length
+	   Frame : m size 
+	   Page number : n size
+
+	   Lower bound: n
+	   UPPER bound: p
+	b) FIFO replacement and in some cases second chance
+2) 
+	a) 
+	FIFO: 17
+	Optimal: 13
+	LRU: 18
+
+	b) 
+	
