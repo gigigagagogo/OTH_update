@@ -6,7 +6,6 @@
     #include "stack.h"
     #include "types.h"
 
-
     int yydebug = 1;
     extern int yylineno;
 
@@ -15,7 +14,51 @@
     int var_get(char *id);
     int var_set(char *id, int val);
     stack_t *vars;
+    ast_type *root = NULL; 
 
+enum ast_types{
+	_INT = 100, _DOUBLE = 101, _STRING = 102,
+
+	_INT_TYPE = 200, _DOUBLE_TYPE = 201, _STRING_TYPE = 202, _VOID_TYPE = 203, _IDENTIFIER = 204,
+
+	_IF = 300, _FOR = 301, _WHILE = 302, _RETURN = 303, _PRINT = 304,
+
+	_NEQUAL = 400, _GEQUAL = 401, _LEQUAL = 402, _EQUAL = 403, _PLUS = 404, _MINUS = 405, _MULTIPLY = 406, _DIVIDE = 407, _LESS = 408, _GREATER = 409,
+	
+	_STATEMENTS = 500, _NEWFUNC = 501, _CONTROLBLOCK = 503
+};
+
+
+
+ast_type *node0(int type){
+ 	ast_type *t = calloc(1, sizeof(ast_type)); 
+	t -> type = type;
+	return t;
+} 
+
+ast_type *node1(int type, ast_type *child0){
+ 	ast_type *t = node0(type); 
+	t -> type = type;
+	t -> child[0] = child0;  
+	return t;
+} 
+
+ast_type *node2(int type, ast_type *child0, ast_type *child1){
+	ast_type *t = node0(type);
+	t -> type = type;
+	t -> child[0] = child0;
+	t -> child[1] = child1;
+	return t;
+}
+
+ast_type *node3(int type, ast_type *child0, ast_type *child1, ast_type *child2){
+	ast_type *t = node0(type);                                                        
+        t -> type = type;                                                                 
+        t -> child[0] = child0;                                                           
+        t -> child[1] = child1;
+	t -> child[2] = child2;							   
+        return t;    
+}
 
 %}
 
@@ -28,41 +71,54 @@
     char *id;
     char op;
     value_t val;
+    ast_type *ast;
 }
 
-%token  T_WHOLEY
-%token  T_FLOATY
-%token  T_IDENTIFIER
-%token   T_OPERATOR
-%token  T_STRING
-%token T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_EQUAL T_NEQUAL T_GEQUAL T_LEQUAL T_CHAIN T_IN T_LPAREN T_RPAREN T_LCURPAR T_RCURPAR T_A_NEW_ONE 
-T_ZIP T_CHECK T_IS T_COLON T_DEFAULT T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE
+
+%token  <num>T_WHOLEY
+%token  <fnum>T_FLOATY
+%token  <id>T_IDENTIFIER
+%token  <str>T_STRING
+%token <op> T_PLUS T_MINUS T_MULTIPLY T_DIVIDE T_LESS T_GREATER T_GEQUAL T_LEQUAL 
+%type <ast> expression statements statement types assignment declaration if_block while_block condition global_declaration function_def block control_block 
+%token <str>T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_IN T_LPAREN T_RPAREN T_LCURPAR T_RCURPAR T_A_NEW_ONE 
+T_ZIP_TYPE T_CHECK T_IS T_COLON T_DEFAULT T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE
+%left T_PLUS T_MINUS
+%left T_MULTIPLY T_DIVIDE 
+%left T_LESS T_GREATER T_GEQUAL T_LEQUAL
+%nonassoc T_EQUAL T_NEQUAL
 %start START
 %%
 
 START:
-     %empty 
-    |START statements    
+	global_declaration {root = node1(_INT_TYPE, $1); }     
+    | START global_declaration { root = node2(_INT_TYPE, root, $2); }
     ;
 
+global_declaration:
+    function_def { $$ = $1; }
+    | statements { $$ = $1; }
+    ;
+
+
 block:
-     T_GO control_block T_ALL_SET
+     T_GO control_block T_ALL_SET { $$ = node1(_CONTROLBLOCK, $2); }
     ;
 
 control_block:
-	     if_block
-    | while_block
-    | for_block
+	     if_block { $$ = $1; }
+    | while_block { $$ = $1; }
+    | for_block 
     | switch_case
     ;
 
 if_block:
-	T_IMAGINE T_LPAREN  condition T_RPAREN T_LCURPAR statements T_RCURPAR
-    | T_IMAGINE T_LPAREN condition T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
-    ;
+	T_IMAGINE T_LPAREN condition T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
+    	{ $$ = node3(_IF, $3, $6, $10);  }
+     ;
 
 while_block:
-	   T_AS_LONG_AS T_LPAREN condition T_RPAREN T_LCURPAR statements T_RCURPAR
+	   T_AS_LONG_AS T_LPAREN condition T_RPAREN T_LCURPAR statements T_RCURPAR { $$ = node2(_WHILE, $3, $6); }
     ;
 
 for_block:
@@ -75,39 +131,56 @@ optional_step:
 	     ;
 
 statements:
-	  statements statement
-    | %empty      
+	  statement ';' { $$ = $1; }
+	  |statements statement ';' { $$ = node2(_STATEMENTS, $1, $2); }    
     ;
 
 statement:
-	 assignment ';'
-    | block
+    declaration { $$ = $1; } 
+    | assignment { $$ = $1; }
+    | function_call 
+    | block 
+    | T_SENDBACK expression 	{ $$ = node1(_RETURN, $2); }    
+    | T_THROWUP expression  { $$ = node1(_PRINT, $2);  }
     ;
 
+declaration:
+	   types T_IDENTIFIER T_EQUAL expression  { 
+	        printf("Declaration parsed: %s -> %d\n", $2, $4->val.i);
+$$ = node3(_EQUAL, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; }
+	;
 assignment:
-      T_IDENTIFIER T_EQUAL expression
-      T_WHOLEY_TYPE  T_IDENTIFIER T_EQUAL expression
-    | T_FLOATY_TYPE T_IDENTIFIER T_EQUAL expression 
-    | T_STRING_TYPE T_IDENTIFIER T_EQUAL expression     
+      T_IDENTIFIER T_EQUAL expression { $$ = node2(_EQUAL, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
     ;
+
+types:
+     %empty { $$ = NULL; } 
+     | T_WHOLEY_TYPE	{ $$ = node0(_INT_TYPE); }
+     | T_FLOATY_TYPE	{ $$ = node0(_DOUBLE_TYPE); }
+     | T_STRING_TYPE 	{ $$ = node0(_STRING_TYPE); }
+     | T_ZIP_TYPE	{ $$ = node0(_VOID_TYPE); }
+     ;
 
 condition:
 	 expression
     ;
 
 expression:
-	  T_WHOLEY     
-    | T_FLOATY 
-    | T_ZIP
-    | T_CHAIN
-    | T_IDENTIFIER 
-    | T_IDENTIFIER T_NEQUAL expression
-    | T_IDENTIFIER T_GEQUAL expression
-    | T_IDENTIFIER T_LEQUAL expression 
-    | T_IDENTIFIER T_OPERATOR expression
-
+	  T_WHOLEY	{ $$ = node0(_INT); $$->val.i = $1;  }     
+    | T_FLOATY 		{ $$ = node0(_DOUBLE); $$->val.d = $1; }				
+    | T_STRING		{ $$ = node0(_STRING); $$->val.s = $1; }				
+    | T_IDENTIFIER	{ $$ = node0(_IDENTIFIER); $$->val.s = $1; } 
+    | T_IDENTIFIER T_NEQUAL expression { $$ = node2(_NEQUAL, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_IDENTIFIER T_GEQUAL expression { $$ = node2(_GEQUAL, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_IDENTIFIER T_LEQUAL expression { $$ = node2(_LEQUAL, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_IDENTIFIER T_PLUS expression { $$ = node2(_PLUS, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_IDENTIFIER T_MINUS expression { $$ = node2(_MINUS, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_IDENTIFIER T_DIVIDE expression { $$ = node2(_DIVIDE, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_IDENTIFIER T_MULTIPLY expression { $$ = node2(_MULTIPLY, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_IDENTIFIER T_LESS expression { $$ = node2(_LESS, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_IDENTIFIER T_GREATER expression { $$ = node2(_GREATER, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; } 
 function_def:
-	    T_A_NEW_ONE expression T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
+	    T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR { $$ = node3(_NEWFUNC, $2, node0(_IDENTIFIER), $8); $$->child[1]->val.s = $3; }
 	;
 function_call:
 	     T_IDENTIFIER T_LPAREN arg_list T_RPAREN
@@ -122,7 +195,7 @@ arg_list:
 	| arg_list T_COMMA expression
 	| %empty
 	;
-switch_case:
+switch_case:	
 	 T_CHECK expression T_LCURPAR case_list T_RCURPAR
 	 ;
 
@@ -154,9 +227,55 @@ void yyerror(const char *s) {
     fprintf(stderr, "Errore alla riga %d: %s\n", yylineno, s);
 }
 
+void print_ast(ast_type *node, int depth) {
+    if (!node) return;
+
+    // Stampa l'indentazione
+    for (int i = 0; i < depth; i++) {
+        if (i == depth - 1)
+            printf("|-- ");
+        else
+            printf("|   ");
+    }
+
+    // Stampa il tipo e il valore del nodo
+    printf("%d", node->type); // Tipo del nodo
+    if (node->type == _INT) {
+        printf(": %d", node->val.i);
+    } else if (node->type == _DOUBLE) {
+        printf(": %f", node->val.d);
+    } else if (node->type == _STRING || node->type == _IDENTIFIER) {
+        printf(": %s", node->val.s);
+    }
+
+    printf("\n");
+
+    // Stampa i figli ricorsivamente
+    for (int i = 0; i < 3; i++) { // Supponendo massimo 3 figli
+        if (node->child[i]) {
+            print_ast(node->child[i], depth + 1);
+        }
+    }
+}
+
+
+/*
+int executor (ast_t *t){
+	if(!t){
+		return 0;
+	}
+	swtich(t->type){
+	
+	}
+}
+*/
 int main() {
    
     printf("Inizio parsing...\n");
     yyparse();
-    return 0;
+   printf("ciao");
+	 extern ast_type *root; 
+    printf("Abstract Syntax Tree:\n");
+    print_ast(root, 0);
+return 0;
 }

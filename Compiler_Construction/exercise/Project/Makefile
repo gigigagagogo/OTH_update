@@ -12,7 +12,7 @@ YACC_H = parser.tab.h
 
 # Compilatore e opzioni
 CC = gcc
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -Wno-unused-function
 
 # Regole principali
 all: clean $(TARGET)
@@ -27,7 +27,7 @@ $(LEX_C): $(LEX_FILE)
 
 # Regola per generare il parser
 $(YACC_C) $(YACC_H): $(YACC_FILE)
-	bison -d -o $(YACC_C) $<
+	bison -d --verbose -o $(YACC_C) $<
 
 # Regola per pulire i file generati
 clean:

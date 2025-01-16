@@ -44,8 +44,16 @@ OPERATOR [+-/!<>]
 "go"                            { return T_GO; }
 "all_set"                       { return T_ALL_SET; }
 "throw_up"                      { return T_THROWUP; }
-"->"                            { return T_EQUAL; }
-"!->"				{ return T_NEQUAL; }
+"+"        			{ return T_PLUS; }
+"-"        			{ return T_MINUS; }
+"*"        			{ return T_MULTIPLY; }
+"/"        			{ return T_DIVIDE; }
+"->"       			{ return T_EQUAL; }
+"!->"      			{ return T_NEQUAL; }
+">="       			{ return T_GEQUAL; }
+"<="       			{ return T_LEQUAL; }
+"<"        			{ return T_LESS; }
+">"        			{ return T_GREATER; }
 "send_back"                     { return T_SENDBACK; }
 "in"				{ return T_IN; }
 "a_new_one"			{ return T_A_NEW_ONE; }
@@ -54,7 +62,7 @@ OPERATOR [+-/!<>]
 "{"				{ return T_LCURPAR; }
 "}"				{ return T_RCURPAR; }
 ","				{ return T_COMMA; }
-"zip"				{ return T_ZIP; }
+"zip"				{ return T_ZIP_TYPE; }
 "check"				{ return T_CHECK; }
 "is"				{ return T_IS; }
 ":"				{ return T_COLON; }
@@ -79,9 +87,6 @@ OPERATOR [+-/!<>]
 <COMMENT>[^$]+                  { ; }
 <COMMENT>"\$x"                  { BEGIN(INITIAL); }
 [a-zA-Z][_a-zA-Z0-9]*           { yylval.id = strdup(yytext); return T_IDENTIFIER; }
-{OPERATOR}			{ return T_OPERATOR; }
-"=>"				{ return T_GEQUAL; }
-"<="				{ return T_LEQUAL; }
 %%
 
 
