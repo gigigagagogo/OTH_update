@@ -21,6 +21,7 @@ typedef struct ast {
         } val;
 } ast_type;
 
-
+void print_ast(ast_type *node, int depth);
+int executor(ast_type *t);
 #endif // TYPES_H
 

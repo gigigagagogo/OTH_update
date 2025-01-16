@@ -25,7 +25,7 @@ enum ast_types{
 
 	_NEQUAL = 400, _GEQUAL = 401, _LEQUAL = 402, _EQUAL = 403, _PLUS = 404, _MINUS = 405, _MULTIPLY = 406, _DIVIDE = 407, _LESS = 408, _GREATER = 409,
 	
-	_STATEMENTS = 500, _NEWFUNC = 501, _CONTROLBLOCK = 503
+	_STATEMENTS = 500, _NEWFUNC = 501, _CONTROLBLOCK = 503, _DECLARATION = 504, _ASSIGNMENT = 505, _SWITCH = 506, _CASE = 507
 };
 
 
@@ -91,13 +91,13 @@ T_ZIP_TYPE T_CHECK T_IS T_COLON T_DEFAULT T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_
 %%
 
 START:
-	global_declaration {root = node1(_INT_TYPE, $1); }     
-    | START global_declaration { root = node2(_INT_TYPE, root, $2); }
+	global_declaration { print_ast($1, 0); }     
+    | START global_declaration { root = node2(_INT_TYPE, root, $2); print_ast(root, 0);}
     ;
 
 global_declaration:
     function_def { $$ = $1; }
-    | statements { $$ = $1; }
+    | statement { $$ = $1; }
     ;
 
 
@@ -109,7 +109,7 @@ control_block:
 	     if_block { $$ = $1; }
     | while_block { $$ = $1; }
     | for_block 
-    | switch_case
+    | switch_case { $$ = $1; }
     ;
 
 if_block:
@@ -136,33 +136,32 @@ statements:
     ;
 
 statement:
-    declaration { $$ = $1; } 
-    | assignment { $$ = $1; }
+    declaration { $$ = node1(_DECLARATION, $1); } 
+    | assignment { $$ = node1(_ASSIGNMENT, $1); }
     | function_call 
-    | block 
+    | block	{ $$ = $1; } 
     | T_SENDBACK expression 	{ $$ = node1(_RETURN, $2); }    
     | T_THROWUP expression  { $$ = node1(_PRINT, $2);  }
     ;
 
 declaration:
 	   types T_IDENTIFIER T_EQUAL expression  { 
-	        printf("Declaration parsed: %s -> %d\n", $2, $4->val.i);
-$$ = node3(_EQUAL, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; }
+	        $$ = node3(_EQUAL, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; }
 	;
+
 assignment:
       T_IDENTIFIER T_EQUAL expression { $$ = node2(_EQUAL, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
     ;
 
-types:
-     %empty { $$ = NULL; } 
-     | T_WHOLEY_TYPE	{ $$ = node0(_INT_TYPE); }
+types: 
+      T_WHOLEY_TYPE	{ $$ = node0(_INT_TYPE); }
      | T_FLOATY_TYPE	{ $$ = node0(_DOUBLE_TYPE); }
      | T_STRING_TYPE 	{ $$ = node0(_STRING_TYPE); }
      | T_ZIP_TYPE	{ $$ = node0(_VOID_TYPE); }
      ;
 
 condition:
-	 expression
+	 expression { $$ = $1; }
     ;
 
 expression:
@@ -196,12 +195,12 @@ arg_list:
 	| %empty
 	;
 switch_case:	
-	 T_CHECK expression T_LCURPAR case_list T_RCURPAR
+	 T_CHECK expression T_LCURPAR case_list T_RCURPAR { $$ = node2(_SWITCH, $2, $4); }
 	 ;
 
 case_list:
-	 case_list T_IS expression T_COLON statements
-	 | T_DEFAULT T_COLON statements
+	 case_list T_IS expression T_COLON statements { $$ = node3(_CASE, $1, $3, $5); }
+	 | T_DEFAULT T_COLON statements { $$ = node1(_STATEMENTS, $3); }
 	 | %empty
 	 ;
 %%
@@ -259,23 +258,19 @@ void print_ast(ast_type *node, int depth) {
 }
 
 
-/*
-int executor (ast_t *t){
+
+int executor (ast_type *t){
 	if(!t){
 		return 0;
 	}
-	swtich(t->type){
-	
+	switch(t->type){
+		case 	
 	}
 }
-*/
+
 int main() {
    
     printf("Inizio parsing...\n");
     yyparse();
-   printf("ciao");
-	 extern ast_type *root; 
-    printf("Abstract Syntax Tree:\n");
-    print_ast(root, 0);
-return 0;
+    return 0;
 }

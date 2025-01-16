@@ -1121,7 +1121,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 90 "language.l"
+#line 92 "language.l"
 ECHO;
 	YY_BREAK
 #line 1128 "lex.yy.c"
@@ -2143,7 +2143,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 90 "language.l"
+#line 92 "language.l"
 
 
 
