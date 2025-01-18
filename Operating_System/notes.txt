@@ -1,0 +1,3 @@
+Chapter 11:
+	a slide 37: dice che un modo per splittare il numeor di framese ad un numero di processi è dividerlo in modo =, però non è un modo ottimale perché magari uno non richiede tanti		frame.
+	slide 39: global allocation alla fine è più efficiente rispetto al local allocation.

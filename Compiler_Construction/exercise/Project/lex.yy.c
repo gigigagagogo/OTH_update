@@ -1092,7 +1092,7 @@ case 41:
 YY_RULE_SETUP
 #line 80 "language.l"
 { 
-					yylval.str= current_string;
+					yylval.str= strdup(current_string);
 					current_string = NULL;
 					BEGIN(INITIAL);
 					return T_STRING;
