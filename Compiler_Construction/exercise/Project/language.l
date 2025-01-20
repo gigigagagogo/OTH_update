@@ -34,7 +34,7 @@
 DIGIT [0-9]+
 OPERATOR [+-/!<>]
 %x STRING COMMENT
-%option noyywrap yylineno 
+%option noinput nounput noyywrap yylineno 
 
 %%
 "imagine"                       { return T_IMAGINE; }
@@ -48,7 +48,8 @@ OPERATOR [+-/!<>]
 "-"        			{ return T_MINUS; }
 "*"        			{ return T_MULTIPLY; }
 "/"        			{ return T_DIVIDE; }
-"->"       			{ return T_EQUAL; }
+"->"       			{ return T_FAI; }
+"-->"				{ return T_EQUAL; }
 "!->"      			{ return T_NEQUAL; }
 ">="       			{ return T_GEQUAL; }
 "<="       			{ return T_LEQUAL; }
@@ -63,13 +64,12 @@ OPERATOR [+-/!<>]
 "}"				{ return T_RCURPAR; }
 ","				{ return T_COMMA; }
 "zip"				{ return T_ZIP_TYPE; }
-"check"				{ return T_CHECK; }
-"is"				{ return T_IS; }
-":"				{ return T_COLON; }
-"default"			{ return T_DEFAULT; }
 "whole_y"			{ return T_WHOLEY_TYPE; }
 "floaty"			{ return T_FLOATY_TYPE; }	
 "chain"				{ return T_STRING_TYPE; }
+"\n"				{  }
+" "				{  }
+"\t"				{  }
 {DIGIT}"."{DIGIT}               { yylval.fnum = atof(yytext); return T_FLOATY; }
 {DIGIT}                         { yylval.num = atoi(yytext); return T_WHOLEY; }
 @x[0-9a-fA-F]+                  { yylval.num = strtol(yytext + 2, NULL, 16); return T_WHOLEY; }
@@ -87,7 +87,7 @@ OPERATOR [+-/!<>]
 <COMMENT>[^\$]+                  { ; }
 <COMMENT>"\$x"                  { BEGIN(INITIAL); }
 [a-zA-Z][_a-zA-Z0-9]*           { yylval.id = strdup(yytext); return T_IDENTIFIER; }
-
+[^ ^\n^\t]{1}			{ return yytext[0]; }
 
 %%
 

@@ -81,16 +81,13 @@ extern int yydebug;
     T_RCURPAR = 282,               /* T_RCURPAR  */
     T_A_NEW_ONE = 283,             /* T_A_NEW_ONE  */
     T_ZIP_TYPE = 284,              /* T_ZIP_TYPE  */
-    T_CHECK = 285,                 /* T_CHECK  */
-    T_IS = 286,                    /* T_IS  */
-    T_COLON = 287,                 /* T_COLON  */
-    T_DEFAULT = 288,               /* T_DEFAULT  */
-    T_COMMA = 289,                 /* T_COMMA  */
-    T_WHOLEY_TYPE = 290,           /* T_WHOLEY_TYPE  */
-    T_FLOATY_TYPE = 291,           /* T_FLOATY_TYPE  */
-    T_STRING_TYPE = 292,           /* T_STRING_TYPE  */
-    T_EQUAL = 293,                 /* T_EQUAL  */
-    T_NEQUAL = 294                 /* T_NEQUAL  */
+    T_COMMA = 285,                 /* T_COMMA  */
+    T_WHOLEY_TYPE = 286,           /* T_WHOLEY_TYPE  */
+    T_FLOATY_TYPE = 287,           /* T_FLOATY_TYPE  */
+    T_STRING_TYPE = 288,           /* T_STRING_TYPE  */
+    T_EQUAL = 289,                 /* T_EQUAL  */
+    T_FAI = 290,                   /* T_FAI  */
+    T_NEQUAL = 291                 /* T_NEQUAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -109,7 +106,7 @@ union YYSTYPE
     value_t val;
     ast_type *ast;
 
-#line 113 "parser.tab.h"
+#line 110 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

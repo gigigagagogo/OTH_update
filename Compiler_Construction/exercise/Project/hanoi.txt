@@ -1,0 +1,19 @@
+a_new_one zip hanoi(whole_y n, chain origin, chain destination, chain temp){
+	go
+		imagine (n-->1){
+			throw_up(^Sposta il disco da origin a  destination^);
+			send_back  5;
+		}nah{
+			a->5;
+		}
+	all_set;
+
+	hanoi(n-1, origin, temp, destination);
+	hanoi(n-1, temp, destination, origin);
+}	
+
+a_new_one zip main(){
+	whole_y n -> 3;
+	
+	hanoi(n,^A^, ^B^, ^C^);
+}

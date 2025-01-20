@@ -1,6 +1,6 @@
 #ifndef TYPES_H
 #define TYPES_H
-#define MAX_CHILD 3
+#define MAX_CHILD 4
 
 typedef struct {
     int type; 
