@@ -1,0 +1,38 @@
+                                        	B:	A1:	A2:
+1	p	p	p
+2	q	u	u
+3	r	q	q
+4	s	r	r
+5	t	v	w
+		s	t
+
+a) diff(B,A1):
+
++ 2 u
++ 4 v
+- 5 t
+
+b) diff(B,A2):
++ 2 u
+- 4 s
++ 4 w
+
+c) 
++ 2 u 
+- 4 s
++ 4 v/w (?)
+- 5t
+
+d) 
++ 4 v (A1) /w (A2) ? Conflict 
+
+e)
++ 4 v
+
+f)
+M:
+1 p
+2 u
+3 q 
+4 r
+5 v
