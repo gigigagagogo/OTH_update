@@ -78,15 +78,17 @@ OPERATOR [+-/!<>]
 <STRING>"\\gms"                 { append_to_string("\n");}
 <STRING>"\\so"                  { append_to_string("\t"); }
 <STRING>"\^"                    { 
-					yylval.str= current_string;
+					yylval.str= strdup(current_string);
 					current_string = NULL;
 					BEGIN(INITIAL);
 					return T_STRING;
 				}
 "x\$"                           { BEGIN(COMMENT); }
-<COMMENT>[^$]+                  { ; }
+<COMMENT>[^\$]+                  { ; }
 <COMMENT>"\$x"                  { BEGIN(INITIAL); }
 [a-zA-Z][_a-zA-Z0-9]*           { yylval.id = strdup(yytext); return T_IDENTIFIER; }
+
+
 %%
 
 

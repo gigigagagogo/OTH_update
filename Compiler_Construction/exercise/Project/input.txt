@@ -1,0 +1,12 @@
+x$ ciao $x
+whole_y a -> 5;
+floaty b -> 6;
+chain d -> ^ciao come stai^;
+go 
+imagine (a > 5){
+	a -> 6;
+} nah {
+	a -> 7;
+}
+all_set; 
+
