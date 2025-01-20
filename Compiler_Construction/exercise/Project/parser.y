@@ -8,7 +8,6 @@
 
     int yydebug = 1;
     extern int yylineno;
-
     void yyerror (const char *msg); 
     int yylex(void);
     int var_get(char *id);
@@ -132,8 +131,6 @@ if_block:
 while_block:
 	   T_AS_LONG_AS T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR { $$ = node2(_WHILE, $3, $6); }
     ;
-
-
 
 for_block:
 	T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
@@ -289,7 +286,6 @@ int main(int argc, char **argv) {
 
     // Assegna il file a yyin per il lexer
     yyin = file;
-
     printf("Inizio parsing del file: %s\n", argv[1]);
 
     // Avvia il parser
