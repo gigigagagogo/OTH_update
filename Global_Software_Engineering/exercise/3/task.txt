@@ -1,0 +1,33 @@
+3.1)
+	a) Consistent: Requirement 6 says that the software can work only if there isnt a network connection, but requirement 7 says that
+	   to use this service we need network connection to share data with the serve.
+	   Complete: no information about when the there is not network connection. Requirements 2 doesn't specify the further details
+	   of the profile.
+3.3)
+	a) Contractors (Developers, Testers)
+	    Enduser (Clients)	
+	
+	b) Vision: The shop will be an important online shopping center with a various choise of items. Will an experience of online buying
+	  	   easy, fast and safe.
+	   Goal:   Implement a price history tracker. Implement an xml/json format for the catalog 
+
+	c) - Implement the digital catalog
+	   - Function for adding an item in the shopping cart	
+	   - Function so the purchaser can delete or update the quantity of the item
+	   - Function to buy the items from the shopping cart
+	   - Function to update the shopping and billing address 
+	   - Function for: Up to twekve hours after completing the purchase, the order may be cancelled.
+	   - Function to track the delivery
+	   - Function for returning purchases
+	d)
+		ID: F0301041		Name: Add item in Shopping Cart
+		Type: Functional Requirements 		
+		Vision:/V01/		Goal:/Z01/
+		Boundary Conditions: Application Domains (only for the purchaser that are interested in that item)
+		Depends on: -		Conflicts with: -
+		Description: A purchaser have the possibility to add an item in the shopping cart. The purcharser can see all the items
+			     in the cart and decide if to buy it, delete it or update the quantity.
+		Keywords: Item, shopping cart, price
+		Stakeholders: purchaser
+		Priority: Important		Technical Risk: Medium
+		

@@ -1,0 +1,18 @@
+2)
+ a) Reduction feature - Descriptive
+ b) Mapping feature - Prescriptive
+ c) Pragmatic feature - Descriptive
+ d) Reduction feature - Descriptive
+
+3)
+	In this case the actor that violated the ethical principles is the Corazon team. 
+	This 'cause of the main ethical principles is that the software have to be safety
+	and to avoid harm. Fortunately the scope of the malicious man (the researcher) it 
+	was not to harm the system, but it was just a demonstation of what real malicious 
+	people can do by this vulnerability. This vuln can also cause a disaster for the 
+	people that use this technology (because if there a second device in close proximity 
+	to the monitoring device this can modify command sent to the implant to force a 
+	device reset). This study case it's a usefull because vulnerability are everywhere.
+	The software are written by developers, and devolpers are humans and they can make
+	mistakes (like in this case). So this article it's usefull to undestand that we
+	have to pay attention on what we use because also big companies can make mistake.
