@@ -3,19 +3,17 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
-    #include "stack.h"
     #include "types.h"
-
+    
     int yydebug = 1;
     extern int yylineno;
     void yyerror (const char *msg); 
     int yylex(void);
     int var_get(char *id);
     int var_set(char *id, int val);
-    stack_t *vars;
     ast_type *root = NULL; 
     extern FILE *yyin;
-
+    
 enum ast_types{
 	_START = 1,
 
@@ -31,10 +29,12 @@ enum ast_types{
 	_OPTSTEP = 511
 };
 
-
-
 ast_type *node0(int type){
  	ast_type *t = calloc(1, sizeof(ast_type)); 
+	if ( t == NULL ){
+		printf("Error memory allocation!");
+		exit(EXIT_FAILURE);
+	}
 	t -> type = type;
 	return t;
 } 
@@ -73,6 +73,8 @@ ast_type *node4(int type, ast_type *child0, ast_type *child1, ast_type *child2, 
         return t;
 }
 
+Scope *current_scope = NULL,
+
 %}
 
 %define parse.error verbose
@@ -104,7 +106,7 @@ T_ZIP_TYPE T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE T_EQUAL
 %%
 
 START:
-     global_declaration { root = node1(_START, $1); }
+     global_declaration { root = node1(_START, $1); current_scope = enter_scope(current_scope); }
     | START global_declaration { root = node2(_START, root, $2); }
 ;
 
@@ -125,23 +127,33 @@ control_block:
 
 if_block:
 	T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
-    	{ $$ = node3(_IF, $3, $6, $10);  }
+    	{ 
+		$$ = node3(_IF, $3, $6, $10);
+		current_scope = enter_scope(current_scope); //Scope "if" variable 
+	}
      ;
 
 while_block:
-	   T_AS_LONG_AS T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR { $$ = node2(_WHILE, $3, $6); }
+	   T_AS_LONG_AS T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR 
+	   { 
+		$$ = node2(_WHILE, $3, $6);
+		current_scope = enter_scope(current_scope); //Scope "while" variable 
+	   }
     ;
 
 for_block:
 	T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
-	{ $$ = node4(_FOR, node0(_IDENTIFIER), $6, $7, $11); $$->child[0]->val.s = $3;}
+	{ 
+		$$ = node4(_FOR, node0(_IDENTIFIER), $6, $7, $11);
+		$$->child[0]->val.s = $3;
+		current_scope = enter_scope(current_scope); //Scope "for" variable 
+	}
 	; 
 
 optional_step:
 	     T_COMMA expression { $$ = node1(_OPTSTEP, $2); }
 	     | %empty { $$ = NULL; }
 	     ;
-
 statements:
 	statements statement ';' { printf("prova"); $$ = node2(_STATEMENTS, $1, $2); }    
 	| statement ';' {printf("prova2"); $$ = $1;}
@@ -188,6 +200,7 @@ expression:
     | expression T_GREATER expression { $$ = node2(_GREATER, $1, $3); }
     | expression T_FAI expression { $$ = node2(_FAI, $1, $3); }
     | expression T_EQUAL expression { $$ = node2(_EQUAL, $1, $3); } 
+    ;
 
 function_def:
 	T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR  { $$ = node4(_NEWFUNC, $2, node0(_IDENTIFIER), $5, $8); $$->child[1]->val.s = $3; } 
@@ -207,23 +220,7 @@ arg_list:
 	;
 %%
 
-/*
-int var_get(char *id) {
-    value_t *v = s_lookup(vars, id);
-    return v == NULL ? 0 : v->u.i;
-}
 
-int var_set(char *id, value_t val) {
-    value_t *v = s_lookup(vars, id);
-    if (v == NULL) {
-	s_push(vars, (value_t){strdup(id), val});
-    } else {
-	v -> type = val.type;
-	v -> u = val.u;
-    }
-    return val.u.i;
-}
-*/
 void yyerror(const char *s) {
     fprintf(stderr, "Errore alla riga %d: %s\n", yylineno, s);
 }
@@ -259,17 +256,38 @@ void print_ast(ast_type *node, int depth) {
     }
 }
 
-
-/*
-int executor (ast_type *t){
-	if(!t){
+int executor(ast_type *node, Scope *current_scope){
+	if(!node){
 		return 0;
 	}
-	switch(t->type){
-		case 	
+	switch(node->type){
+		case _INT:
+			return node->val.i;
+		case _DOUBLE:
+			return node->val.d;
+		case _PLUS:
+			return executor(node->child[0], current_scope) +
+			       executor(node->child[1], current_scope);
+		case _MINUS:
+			return executor(node->child[0], current_scope) -
+			       executor(node->child[1], current_scope);
+		case _MULTIPLY:
+			return executor(node->child[0], current_scope) *
+			       executor(node->child[1], current_scope);
+		case _DIVIDE:
+			return executor(node->child[0], current_scope) /
+			       executor(node->child[1], current_scope);
+		case _PRINT:
+			if(node->child[0] != NULL){
+				printf("%d", executor(node->child[0], current_scope));
+			}
+			return 0;
+		default:
+			printf("Unsupported node type %d\n", node->type);
+			break;
 	}
+	return 0;
 }
-*/
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -277,23 +295,26 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    // Apri il file specificato come argomento
     FILE *file = fopen(argv[1], "r");
     if (!file) {
         perror("Error opening file");
         return 1;
     }
 
-    // Assegna il file a yyin per il lexer
     yyin = file;
     printf("Inizio parsing del file: %s\n", argv[1]);
 
-    // Avvia il parser
     yyparse();
     
     if (root) {
         printf("AST completo:\n");
         print_ast(root, 0);
+
+        printf("\nEsecuzione dell'AST:\n");
+        executor(root, current_scope);
+
+        current_scope = exit_scope(current_scope);
+     
     }
 
     // Chiudi il file

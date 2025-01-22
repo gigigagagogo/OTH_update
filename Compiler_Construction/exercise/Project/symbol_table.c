@@ -2,19 +2,7 @@
 #include <stdlib.h>
 #include "types.h"
 
-typedef struct node{
-	char *key;
-	value_t value;
-	struct node *next;
-}Node;
-
-typedef struct ht{
-	Node **entries;
-	int size;
-	int count;
-}ht_str;
-
-void free_ht(ht_str *hashtable) {
+void free_ht (ht_str *hashtable) {
     if (hashtable == NULL) {
         return; 
     }
@@ -41,7 +29,7 @@ void free_ht(ht_str *hashtable) {
 }
 
 
-void resize_table(ht_str *hashtable) {
+void resize_table (ht_str *hashtable) {
     int new_size = hashtable->size * 2; 
     Node **new_entries = malloc(sizeof(Node *) * new_size);
 
@@ -75,10 +63,10 @@ void resize_table(ht_str *hashtable) {
     free(hashtable->entries);
     hashtable->entries = new_entries;
     hashtable->size = new_size;
+}
 
 
-
-value_t *search(ht_str *hashtable, const char *key){
+value_t *search (ht_str *hashtable, const char *key){
 	unsigned int index = hash_function(key, hashtable->size);
 
 	Node *entry = hashtable->entries[index];
@@ -139,12 +127,11 @@ void ht_set (ht_str *hashtable, const char *key, const value_t value){
 		currentBucket = prev -> next;
 	}
 
-	prev->next = ht_pair(key, value);
-	
-	hash	table->count++;
+	prev->next = ht_pair(key, value);	
+	hashtable->count++;
 }
 
-unsigned int hash_function(const char *key, int size){
+unsigned int hash_function (const char *key, int size){
 	unsigned int hash = 0;
 
 	while(*key){
@@ -154,7 +141,7 @@ unsigned int hash_function(const char *key, int size){
 	return (hash % size);
 }
 
-ht_str *create_ht(int size){
+ht_str *create_ht (int size){
 	ht_str *hashtable = malloc(sizeof(ht_str));
 
 	hashtable->entries = malloc(sizeof(Node *) * size);
@@ -170,9 +157,6 @@ ht_str *create_ht(int size){
 	for(int i = 0; i < size; i++){
 		hashtable->entries[i] = NULL;
 	}
-
-	hashtable->size = size;
-	hashtable->count = 0;
 
 	return hashtable;
 }
