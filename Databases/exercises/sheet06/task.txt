@@ -1,0 +1,54 @@
+1)
+	create or replace function check_section() 
+	return trigger as $$
+	begin 
+	if new.course_id in
+	(select t.course_id from teaches t where id = new.id and year = new.year and semester = new.semester)
+	raise "Error"
+	end if;
+	return null 
+	end; $$ language plpgsql;
+
+	create or replace trigger check after before on teaches for each row execute procedure check_section();
+
+2)
+a)	
+	create or replace function avg_salary(company_name varchar(20))
+	return integer as $$
+	begin 
+	declare av_sal integer
+	select avg(w.salary) into av_sal from works w where w.company_name = avg_salary.company_name
+	return av_sal;
+	end; $$ language plpgsql;
+
+	select distinct company_name from work where avg_salary(company_name) > avg_salary("First Bank")  
+
+	create table employee(
+		emplyee_name varchar(20) primary key, street varchar(10), city varchar(20)
+	);
+	
+	create table works(
+		emplyee_name varchar(20) foreign key, company_name varchar(20), salary int
+	);
+
+	insert into employee VALUES (’A’, ’Street 1’, ’city 1’);
+	insert into employee VALUES (’B’, ’Street 2’, ’city 2’);
+	insert into employee VALUES (’C’, ’Street 3’, ’city 3’);
+	insert into employee VALUES (’D’, ’Street 4’, ’city 4’);
+	insert into employee VALUES (’E’, ’Street 5’, ’city 5’);
+	insert into works VALUES (’A’, ’First Bank’, ’10’);
+	insert into works VALUES (’B’, ’First Bank’, ’20’);
+	insert into works VALUES (’C’, ’First Bank’, ’30’);
+	insert into works VALUES (’D’, ’Company 2’, ’40’);
+	insert into works VALUES (’E’, ’Company 2’, ’50’);
+
+b)
+	create or replace function del_cascade()
+	return trigger as $$
+	begin 
+	delete from works where employees = old.employees
+	return null;
+	end; language plpgsql;
+
+	create or replace trigger trg after delete on employee for each row execute procedure del_cascade();
+	
