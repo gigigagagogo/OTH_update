@@ -1,2 +1,2 @@
-chain a -> ^test^;
+chain a -> ^test\gms^;
 throw_up(a);

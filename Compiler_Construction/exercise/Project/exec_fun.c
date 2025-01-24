@@ -130,7 +130,7 @@ void handle_print(value_t result){
 		printf("%lf", result.u.d);
 	}else if(result.type == 2){
 		if (result.u.s) {
-                	printf("%s", result.u.s);
+                	printf("%s",result.u.s);
                  } else {
             		printf("Error: Attempting to print a NULL string\n");
             		exit(EXIT_FAILURE);
@@ -164,14 +164,13 @@ void handle_declaration(ast_type *node, Scope *current_scope) {
     }
 
     if (expr_value.type == 2) { // Tipo stringa
-        expr_value.u.s = strdup(expr_value.u.s);
-        if (!expr_value.u.s) {
-            printf("Error: Memory allocation failed for string\n");
-            exit(EXIT_FAILURE);
-        }
+	expr_value.u.s = strdup(expr_value.u.s);
+	if (!expr_value.u.s) { // Verifica l'allocazione
+        	printf("Error: Memory allocation failed for string\n");
+        	exit(EXIT_FAILURE);
+    	}
     }
 
-    // Aggiungi la variabile alla symbol table
     ht_set(current_scope->symbolTable, id_node->val.s, expr_value);
 }
 

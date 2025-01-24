@@ -87,38 +87,16 @@ value_t *search (ht_str *hashtable, const char *key){
 }
 
 Node *ht_pair(const char *key, const value_t value) {
-    Node *entry = malloc(sizeof(Node));
-    if (!entry) {
-        printf("Error: Memory allocation failed!\n");
-        exit(EXIT_FAILURE);
-    }
+	Node *entry = malloc(sizeof(entry));
+	entry->key = malloc(strlen(key) + 1);
+	entry->value =value;
 
-    // Copia la chiave
-    entry->key = malloc(strlen(key) + 1);
-    if (!entry->key) {
-        printf("Error: Memory allocation for key failed!\n");
-        free(entry);
-        exit(EXIT_FAILURE);
-    }
-    strcpy(entry->key, key);
+	strcpy(entry->key, key);
+	entry->value = value;
 
-    // Gestione del valore
-    if (value.type == 2) { // Se il valore è una stringa
-        entry->value.u.s = malloc(strlen(value.u.s) + 1);
-        if (!entry->value.u.s) {
-            printf("Error: Memory allocation for value string failed!\n");
-            free(entry->key);
-            free(entry);
-            exit(EXIT_FAILURE);
-        }
-        strcpy(entry->value.u.s, value.u.s);
-    } else {
-        entry->value = value; // Copia diretta per altri tipi
-    }
+	entry->next = NULL;
 
-    entry->next = NULL; // Inizializza il puntatore next
-
-    return entry;
+	return entry;
 }
 
 
