@@ -4,7 +4,8 @@
     #include <stdlib.h>
     #include <string.h>
     #include "types.h"
-    
+    #include "math.h"    
+    #include "exec_fun.h"
     int yydebug = 1;
     extern int yylineno;
     void yyerror (const char *msg); 
@@ -14,20 +15,6 @@
     ast_type *root = NULL; 
     extern FILE *yyin;
     
-enum ast_types{
-	_START = 1,
-
-	_INT = 100, _DOUBLE = 101, _STRING = 102,
-
-	_INT_TYPE = 200, _DOUBLE_TYPE = 201, _STRING_TYPE = 202, _VOID_TYPE = 203, _IDENTIFIER = 204,
-
-	_IF = 300, _FOR = 301, _WHILE = 302, _RETURN = 303, _PRINT = 304,
-
-	_NEQUAL = 400, _GEQUAL = 401, _LEQUAL = 402, _EQUAL = 403, _PLUS = 404, _MINUS = 405, _MULTIPLY = 406, _DIVIDE = 407, _LESS = 408, _GREATER = 409, _FAI = 410,
-	
-	_STATEMENTS = 500, _NEWFUNC = 501, _CONTROLBLOCK = 503, _DECLARATION = 504, _ASSIGNMENT = 505, _FUNCALL = 508, _ARGLIST = 509, _PARAMLIST = 510, 
-	_OPTSTEP = 511
-};
 
 ast_type *node0(int type){
  	ast_type *t = calloc(1, sizeof(ast_type)); 
@@ -73,7 +60,7 @@ ast_type *node4(int type, ast_type *child0, ast_type *child1, ast_type *child2, 
         return t;
 }
 
-Scope *current_scope = NULL,
+Scope *current_scope = NULL;
 
 %}
 
@@ -126,10 +113,13 @@ control_block:
     ;
 
 if_block:
-	T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
+	T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR
+	{
+		$$ = node2(_IF, $3, $6);
+	}
+	|T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
     	{ 
 		$$ = node3(_IF, $3, $6, $10);
-		current_scope = enter_scope(current_scope); //Scope "if" variable 
 	}
      ;
 
@@ -137,7 +127,6 @@ while_block:
 	   T_AS_LONG_AS T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR 
 	   { 
 		$$ = node2(_WHILE, $3, $6);
-		current_scope = enter_scope(current_scope); //Scope "while" variable 
 	   }
     ;
 
@@ -155,13 +144,13 @@ optional_step:
 	     | %empty { $$ = NULL; }
 	     ;
 statements:
-	statements statement ';' { printf("prova"); $$ = node2(_STATEMENTS, $1, $2); }    
-	| statement ';' {printf("prova2"); $$ = $1;}
+	statements statement ';' { $$ = node2(_STATEMENTS, $1, $2); }    
+	| statement ';' { $$ = $1;}
 ;
 
 statement:
-    declaration { $$ = node1(_DECLARATION, $1); } 
-    | assignment { $$ = node1(_ASSIGNMENT, $1); }
+    declaration { $$ = $1; } 
+    | assignment { $$ = $1; }
     | function_call { $$ = $1; } 
     | block	{ $$ = $1; } 
     | T_SENDBACK expression 	{ $$ = node1(_RETURN, $2); }    
@@ -170,11 +159,11 @@ statement:
 
 declaration:
 	   types T_IDENTIFIER T_FAI expression  {  
-		$$ = node3(_EQUAL, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; }
+		$$ = node3(_DECLARATION, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; }
 	;
 
 assignment:
-      T_IDENTIFIER T_FAI expression { $$ = node2(_EQUAL, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+      T_IDENTIFIER T_FAI expression { $$ = node2(_ASSIGNMENT, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
     ;
 
 types: 
@@ -185,7 +174,7 @@ types:
      ;
 
 expression:
-	  T_WHOLEY	{ $$ = node0(_INT); $$->val.i = $1;  }     
+      T_WHOLEY		{ $$ = node0(_INT); $$->val.i = $1;  }     
     | T_FLOATY 		{ $$ = node0(_DOUBLE); $$->val.d = $1; }				
     | T_STRING		{ $$ = node0(_STRING); $$->val.s = $1; }				
     | T_IDENTIFIER	{ $$ = node0(_IDENTIFIER); $$->val.s = $1; } 
@@ -199,11 +188,16 @@ expression:
     | expression T_LESS expression { $$ = node2(_LESS, $1, $3); }
     | expression T_GREATER expression { $$ = node2(_GREATER, $1, $3); }
     | expression T_FAI expression { $$ = node2(_FAI, $1, $3); }
-    | expression T_EQUAL expression { $$ = node2(_EQUAL, $1, $3); } 
-    ;
+    | expression T_EQUAL expression { $$ = node2(_EQUAL, $1, $3); }
+    | T_LPAREN expression T_RPAREN  { $$ = node1(_PARENSTMT, $2); }
+;
 
 function_def:
-	T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR  { $$ = node4(_NEWFUNC, $2, node0(_IDENTIFIER), $5, $8); $$->child[1]->val.s = $3; } 
+	T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR  
+	{
+		 $$ = node4(_NEWFUNC, $2, node0(_IDENTIFIER), $5, $8); 
+		 $$->child[1]->val.s = $3;	
+	} 
 	;
 function_call:
 	     T_IDENTIFIER T_LPAREN arg_list T_RPAREN	{ $$ = node2(_FUNCALL, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
@@ -256,39 +250,124 @@ void print_ast(ast_type *node, int depth) {
     }
 }
 
-int executor(ast_type *node, Scope *current_scope){
-	if(!node){
-		return 0;
-	}
-	switch(node->type){
-		case _INT:
-			return node->val.i;
-		case _DOUBLE:
-			return node->val.d;
-		case _PLUS:
-			return executor(node->child[0], current_scope) +
-			       executor(node->child[1], current_scope);
-		case _MINUS:
-			return executor(node->child[0], current_scope) -
-			       executor(node->child[1], current_scope);
-		case _MULTIPLY:
-			return executor(node->child[0], current_scope) *
-			       executor(node->child[1], current_scope);
-		case _DIVIDE:
-			return executor(node->child[0], current_scope) /
-			       executor(node->child[1], current_scope);
-		case _PRINT:
-			if(node->child[0] != NULL){
-				printf("%d", executor(node->child[0], current_scope));
-			}
-			return 0;
-		default:
-			printf("Unsupported node type %d\n", node->type);
-			break;
-	}
-	return 0;
-}
+value_t executor(ast_type *node, Scope *current_scope) {
+    value_t result = {0}; // Inizializza un valore predefinito
+    if (!node) {
+        return result;
+    }
 
+    switch (node->type) {
+	case _START: {
+    		for (int i = 0; i < MAX_CHILD; i++) {
+        		if (node->child[i]) {
+            			executor(node->child[i], current_scope);
+        		}
+    		}
+    		break;
+	}
+
+	case _INT: {
+            result.type = 0;
+            result.u.i = node->val.i;
+            break;
+        }
+        case _DOUBLE: {
+            result.type = 1;
+            result.u.d = node->val.d;
+            break;
+        }
+        case _STRING: {
+            result.type = 2;
+            result.u.s = node->val.s;
+            break;
+        }
+
+	case _PLUS: 
+		value_t left = executor(node->child[0], current_scope), right = executor(node->child[1], current_scope);
+		result = handle_plus(left, right, result);
+
+	case _GREATER: { 
+	    value_t left = executor(node->child[0], current_scope); 
+    	    value_t right = executor(node->child[1], current_scope); 
+    	    result = compare_values(left, right, 0, result); 
+    	    break;
+	}
+
+	case _LESS: {
+		value_t left = executor(node->child[0], current_scope);
+    		value_t right = executor(node->child[1], current_scope);
+    		result = compare_values(left, right, 1, result);
+    		break;
+	}
+
+	case _GEQUAL: {
+		value_t left = executor(node->child[0], current_scope);
+    		value_t right = executor(node->child[1], current_scope);
+    		result = compare_values(left, right, 2, result);
+    		break;
+	}
+
+	case _LEQUAL: {
+		value_t left = executor(node->child[0], current_scope);
+    		value_t right = executor(node->child[1], current_scope);
+    		result = compare_values(left, right, 3, result);
+    		break;
+	}
+
+	case _EQUAL: {
+		value_t left = executor(node->child[0], current_scope);
+    		value_t right = executor(node->child[1], current_scope);
+    		result = compare_values(left, right, 4, result);
+    		break;
+	}
+
+	case _NEQUAL: {
+		value_t left = executor(node->child[0], current_scope);
+    		value_t right = executor(node->child[1], current_scope);
+    		result = compare_values(left, right, 5, result);
+    		break;
+	}
+
+	case _PARENSTMT:
+		result = executor(node->child[0], current_scope);	
+		break;
+	case _PRINT: {
+		result = executor(node->child[0], current_scope);
+		handle_print(result);
+		break;
+	}
+	case _DECLARATION: {
+    		handle_declaration(node, current_scope);
+		break;
+	}
+	case _ASSIGNMENT: {
+    		handle_assignment(node, current_scope);
+		break;
+	}
+	case _IDENTIFIER: {
+    		result = handle_identifier(node, current_scope);
+		break;
+	}
+	case _CONTROLBLOCK:
+		executor(node->child[0], current_scope);
+		break;
+	case _IF: {
+ 		handle_if(node, current_scope);
+    		break;
+	}
+	case _WHILE: {
+		handle_while(node, current_scope);
+		break;	
+	}	
+	default: {
+		printf("Error type %d\n", node->type);
+		exit(EXIT_FAILURE);
+	}
+		
+     }
+    
+	return result;
+}
 int main(int argc, char **argv) {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s <input_file>\n", argv[0]);

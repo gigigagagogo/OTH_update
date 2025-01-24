@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "types.h"
 
 Scope *enter_scope (Scope *current_scope){
@@ -25,10 +23,11 @@ Scope *exit_scope (Scope *current_scope){
 
 value_t *lookup (Scope *current_scope, const char *key){
 	Scope *scope = current_scope;
+	static value_t value;
 	while (scope != NULL){
-		value_t *value = search(scope->symbolTable, key);
-		if (value != NULL){
-			return value;
+		value = search(scope->symbolTable, key);
+		if (value.type != -1){
+			return &value;
 		}
 		scope = scope->parent;
 	}

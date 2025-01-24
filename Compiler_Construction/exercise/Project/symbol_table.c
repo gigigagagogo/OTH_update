@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "types.h"
 
 void free_ht (ht_str *hashtable) {
@@ -66,13 +64,14 @@ void resize_table (ht_str *hashtable) {
 }
 
 
-value_t *search (ht_str *hashtable, const char *key){
+value_t search (ht_str *hashtable, const char *key){
+	value_t not_found = { .type = -1 };
 	unsigned int index = hash_function(key, hashtable->size);
 
 	Node *entry = hashtable->entries[index];
 	
 	if(entry == NULL){
-		return NULL;
+		return not_found;
 	}
 
 	while(entry != NULL){
@@ -82,14 +81,15 @@ value_t *search (ht_str *hashtable, const char *key){
 		entry = entry->next;
 	}
 
-	return NULL;
+	return not_found;
+
 
 }
 
 Node *ht_pair (const char *key, const value_t value){
 	Node *entry = malloc(sizeof(entry));
 	entry->key = malloc(strlen(key) + 1);
-	entry->value = malloc(value);
+	entry->value =value;
 
 	strcpy(entry->key, key);
 	entry->value = value;
@@ -119,7 +119,9 @@ void ht_set (ht_str *hashtable, const char *key, const value_t value){
 
 	while(currentBucket != NULL){
 		if(strcmp(currentBucket->key, key) == 0){
-			free(currentBucket->value);
+			if(currentBucket->value.type == 2){
+				free(currentBucket->value.u.s);
+			}
 			currentBucket->value = value;
 			return;
 		}
@@ -132,7 +134,7 @@ void ht_set (ht_str *hashtable, const char *key, const value_t value){
 }
 
 unsigned int hash_function (const char *key, int size){
-	unsigned int hash = 0;
+	unsigned long int hash = 0;
 
 	while(*key){
 		hash = hash *37 + *key++;
@@ -142,11 +144,11 @@ unsigned int hash_function (const char *key, int size){
 }
 
 ht_str *create_ht (int size){
-	ht_str *hashtable = malloc(sizeof(ht_str));
+	ht_str *hashtable = malloc(sizeof(ht_str) * 1);
 
 	hashtable->entries = malloc(sizeof(Node *) * size);
 
-	if(!hashtable!entries){
+	if(!hashtable->entries){
 		printf("Error memory allocation!");
 		exit(EXIT_FAILURE);
 	}
