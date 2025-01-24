@@ -2159,7 +2159,16 @@ value_t executor(ast_type *node, Scope *current_scope) {
     		}
     		break;
 	}
+	case _STATEMENTS: {
+		if (node->child[0] != NULL) {
+        		executor(node->child[0], current_scope);
+    		}
 
+    		if (node->child[1] != NULL) {
+        		executor(node->child[1], current_scope);
+    		}
+    break;
+	}
 	case _INT: {
             result.type = 0;
             result.u.i = node->val.i;
@@ -2176,10 +2185,16 @@ value_t executor(ast_type *node, Scope *current_scope) {
             break;
         }
 
-	case _PLUS: 
+	case _PLUS: { 
 		value_t left = executor(node->child[0], current_scope), right = executor(node->child[1], current_scope);
 		result = handle_plus(left, right, result);
-
+		break;
+	}
+	case _MINUS: {
+		value_t left = executor(node->child[0], current_scope), right = executor(node->child[1], current_scope);
+		result = handle_minus(left, right, result);
+		break;
+	}
 	case _GREATER: { 
 	    value_t left = executor(node->child[0], current_scope); 
     	    value_t right = executor(node->child[1], current_scope); 
@@ -2250,7 +2265,8 @@ value_t executor(ast_type *node, Scope *current_scope) {
     		break;
 	}
 	case _WHILE: {
-		handle_while(node, current_scope);	
+		handle_while(node, current_scope);
+		break;	
 	}	
 	default: {
 		printf("Error type %d\n", node->type);

@@ -1,0 +1,9 @@
+whole_y a -> 5;
+
+go
+imagine(a > 4){
+	a -> 7;
+	throw_up (a);
+}
+all_set;
+throw_up(a);

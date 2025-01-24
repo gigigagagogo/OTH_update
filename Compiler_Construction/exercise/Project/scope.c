@@ -23,11 +23,11 @@ Scope *exit_scope (Scope *current_scope){
 
 value_t *lookup (Scope *current_scope, const char *key){
 	Scope *scope = current_scope;
-	static value_t value;
+	value_t *value;
 	while (scope != NULL){
 		value = search(scope->symbolTable, key);
-		if (value.type != -1){
-			return &value;
+		if (value->type != -1){
+			return value;
 		}
 		scope = scope->parent;
 	}

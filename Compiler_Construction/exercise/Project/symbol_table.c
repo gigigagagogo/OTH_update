@@ -64,41 +64,63 @@ void resize_table (ht_str *hashtable) {
 }
 
 
-value_t search (ht_str *hashtable, const char *key){
-	value_t not_found = { .type = -1 };
+value_t *search (ht_str *hashtable, const char *key){
+	static value_t not_found = { .type = -1 };
 	unsigned int index = hash_function(key, hashtable->size);
 
 	Node *entry = hashtable->entries[index];
 	
 	if(entry == NULL){
-		return not_found;
+		return &not_found;
 	}
 
 	while(entry != NULL){
 		if(strcmp(entry->key, key) == 0){
-			return entry->value;
+			return &entry->value;
 		}
 		entry = entry->next;
 	}
 
-	return not_found;
+	return &not_found;
 
 
 }
 
-Node *ht_pair (const char *key, const value_t value){
-	Node *entry = malloc(sizeof(entry));
-	entry->key = malloc(strlen(key) + 1);
-	entry->value =value;
+Node *ht_pair(const char *key, const value_t value) {
+    Node *entry = malloc(sizeof(Node));
+    if (!entry) {
+        printf("Error: Memory allocation failed!\n");
+        exit(EXIT_FAILURE);
+    }
 
-	strcpy(entry->key, key);
-	entry->value = value;
+    // Copia la chiave
+    entry->key = malloc(strlen(key) + 1);
+    if (!entry->key) {
+        printf("Error: Memory allocation for key failed!\n");
+        free(entry);
+        exit(EXIT_FAILURE);
+    }
+    strcpy(entry->key, key);
 
-	entry->next = NULL;
+    // Gestione del valore
+    if (value.type == 2) { // Se il valore è una stringa
+        entry->value.u.s = malloc(strlen(value.u.s) + 1);
+        if (!entry->value.u.s) {
+            printf("Error: Memory allocation for value string failed!\n");
+            free(entry->key);
+            free(entry);
+            exit(EXIT_FAILURE);
+        }
+        strcpy(entry->value.u.s, value.u.s);
+    } else {
+        entry->value = value; // Copia diretta per altri tipi
+    }
 
-	return entry;
+    entry->next = NULL; // Inizializza il puntatore next
 
+    return entry;
 }
+
 
 void ht_set (ht_str *hashtable, const char *key, const value_t value){
 	//check for 75%	

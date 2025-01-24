@@ -1,0 +1,2 @@
+chain a -> ^test^;
+throw_up(a);

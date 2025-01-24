@@ -66,7 +66,7 @@ value_t executor(ast_type *node, Scope *current_scope);
 //symbol_table file functions
 void free_ht (ht_str *hashtable);
 void resize_table (ht_str *hashtable);
-value_t search (ht_str *hashtable, const char *key);
+value_t *search (ht_str *hashtable, const char *key);
 Node *ht_pair (const char *key, const value_t value);
 void ht_set (ht_str *hashtable, const char *key, const value_t value);
 unsigned int hash_function (const char *key, int size);

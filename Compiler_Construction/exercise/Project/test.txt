@@ -1,3 +1,0 @@
-whole_y a -> 5;
-a -> a + 1;
-throw_up(a + ^\gms^);

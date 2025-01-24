@@ -4,6 +4,7 @@
 #include "types.h"
 
 value_t handle_plus(value_t left, value_t right, value_t result);
+value_t handle_minus(value_t left, value_t right, value_t result);
 void handle_print(value_t result);
 void handle_declaration(ast_type *node, Scope *current_scope);
 void handle_assignment(ast_type *node, Scope *current_scope);
