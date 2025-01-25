@@ -19,79 +19,78 @@ Grammar
 
    11 while_block: T_AS_LONG_AS T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR
 
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
 
-   13 optional_step: T_COMMA expression
-   14              | ε
+   13 step: expression T_COMMA expression T_COMMA expression
 
-   15 statements: statements statement ';'
-   16           | statement ';'
+   14 statements: statements statement ';'
+   15           | statement ';'
 
-   17 statement: declaration
-   18          | assignment
-   19          | function_call
-   20          | block
-   21          | T_SENDBACK expression
-   22          | T_THROWUP T_LPAREN expression T_RPAREN
+   16 statement: declaration
+   17          | assignment
+   18          | function_call
+   19          | block
+   20          | T_SENDBACK expression
+   21          | T_THROWUP T_LPAREN expression T_RPAREN
 
-   23 declaration: types T_IDENTIFIER T_FAI expression
+   22 declaration: types T_IDENTIFIER T_FAI expression
 
-   24 assignment: T_IDENTIFIER T_FAI expression
+   23 assignment: T_IDENTIFIER T_FAI expression
 
-   25 types: T_WHOLEY_TYPE
-   26      | T_FLOATY_TYPE
-   27      | T_STRING_TYPE
-   28      | T_ZIP_TYPE
+   24 types: T_WHOLEY_TYPE
+   25      | T_FLOATY_TYPE
+   26      | T_STRING_TYPE
+   27      | T_ZIP_TYPE
 
-   29 expression: T_WHOLEY
-   30           | T_FLOATY
-   31           | T_STRING
-   32           | T_IDENTIFIER
-   33           | expression T_NEQUAL expression
-   34           | expression T_GEQUAL expression
-   35           | expression T_LEQUAL expression
-   36           | expression T_PLUS expression
-   37           | expression T_MINUS expression
-   38           | expression T_DIVIDE expression
-   39           | expression T_MULTIPLY expression
-   40           | expression T_LESS expression
-   41           | expression T_GREATER expression
-   42           | expression T_FAI expression
-   43           | expression T_EQUAL expression
-   44           | T_LPAREN expression T_RPAREN
+   28 expression: T_WHOLEY
+   29           | T_FLOATY
+   30           | T_STRING
+   31           | T_IDENTIFIER
+   32           | expression T_NEQUAL expression
+   33           | expression T_GEQUAL expression
+   34           | expression T_LEQUAL expression
+   35           | expression T_PLUS expression
+   36           | expression T_MINUS expression
+   37           | expression T_DIVIDE expression
+   38           | expression T_MULTIPLY expression
+   39           | expression T_LESS expression
+   40           | expression T_GREATER expression
+   41           | expression T_FAI expression
+   42           | expression T_EQUAL expression
+   43           | T_LPAREN expression T_RPAREN
 
-   45 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
+   44 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
 
-   46 function_call: T_IDENTIFIER T_LPAREN arg_list T_RPAREN
+   45 function_call: T_IDENTIFIER T_LPAREN arg_list T_RPAREN
 
-   47 param_list: types T_IDENTIFIER
-   48           | param_list T_COMMA types T_IDENTIFIER
-   49           | ε
+   46 param_list: types T_IDENTIFIER
+   47           | param_list T_COMMA types T_IDENTIFIER
+   48           | ε
 
-   50 arg_list: expression
-   51         | arg_list T_COMMA expression
-   52         | ε
+   49 arg_list: expression
+   50         | arg_list T_COMMA expression
+   51         | ε
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
-    ';' (59) 4 15 16
+    ';' (59) 4 14 15
     error (256)
-    T_WHOLEY <num> (258) 29
-    T_FLOATY <fnum> (259) 30
-    T_IDENTIFIER <id> (260) 12 23 24 32 45 46 47 48
-    T_STRING <str> (261) 31
-    T_PLUS <op> (262) 36
-    T_MINUS <op> (263) 37
-    T_MULTIPLY <op> (264) 39
-    T_DIVIDE <op> (265) 38
-    T_LESS <op> (266) 40
-    T_GREATER <op> (267) 41
-    T_GEQUAL <op> (268) 34
-    T_LEQUAL <op> (269) 35
-    T_SENDBACK <str> (270) 21
-    T_THROWUP <str> (271) 22
+    T_WHOLEY <num> (258) 28
+    T_FLOATY <fnum> (259) 29
+    T_IDENTIFIER <id> (260) 12 22 23 31 44 45 46 47
+    T_STRING <str> (261) 30
+    T_PLUS <op> (262) 35
+    T_MINUS <op> (263) 36
+    T_MULTIPLY <op> (264) 38
+    T_DIVIDE <op> (265) 37
+    T_LESS <op> (266) 39
+    T_GREATER <op> (267) 40
+    T_GEQUAL <op> (268) 33
+    T_LEQUAL <op> (269) 34
+    T_SENDBACK <str> (270) 20
+    T_THROWUP <str> (271) 21
     T_GO <str> (272) 5
     T_ALL_SET <str> (273) 5
     T_IMAGINE <str> (274) 9 10
@@ -99,19 +98,19 @@ Terminals, with rules where they appear
     T_ONE_BY_ONE <str> (276) 12
     T_AS_LONG_AS <str> (277) 11
     T_IN <str> (278) 12
-    T_LPAREN <str> (279) 9 10 11 12 22 44 45 46
-    T_RPAREN <str> (280) 9 10 11 12 22 44 45 46
-    T_LCURPAR <str> (281) 9 10 11 12 45
-    T_RCURPAR <str> (282) 9 10 11 12 45
-    T_A_NEW_ONE <str> (283) 45
-    T_ZIP_TYPE <str> (284) 28
-    T_COMMA <str> (285) 13 48 51
-    T_WHOLEY_TYPE <str> (286) 25
-    T_FLOATY_TYPE <str> (287) 26
-    T_STRING_TYPE <str> (288) 27
-    T_EQUAL <str> (289) 43
-    T_FAI (290) 23 24 42
-    T_NEQUAL (291) 33
+    T_LPAREN <str> (279) 9 10 11 12 21 43 44 45
+    T_RPAREN <str> (280) 9 10 11 12 21 43 44 45
+    T_LCURPAR <str> (281) 9 10 11 12 44
+    T_RCURPAR <str> (282) 9 10 11 12 44
+    T_A_NEW_ONE <str> (283) 44
+    T_ZIP_TYPE <str> (284) 27
+    T_COMMA <str> (285) 13 47 50
+    T_WHOLEY_TYPE <str> (286) 24
+    T_FLOATY_TYPE <str> (287) 25
+    T_STRING_TYPE <str> (288) 26
+    T_EQUAL <str> (289) 42
+    T_FAI (290) 22 23 41
+    T_NEQUAL (291) 32
 
 
 Nonterminals, with rules where they appear
@@ -126,7 +125,7 @@ Nonterminals, with rules where they appear
         on right: 1 2
     block <ast> (41)
         on left: 5
-        on right: 20
+        on right: 19
     control_block <ast> (42)
         on left: 6 7 8
         on right: 5
@@ -139,39 +138,39 @@ Nonterminals, with rules where they appear
     for_block <ast> (45)
         on left: 12
         on right: 8
-    optional_step <ast> (46)
-        on left: 13 14
+    step <ast> (46)
+        on left: 13
         on right: 12
     statements <ast> (47)
-        on left: 15 16
-        on right: 9 10 11 12 15 45
+        on left: 14 15
+        on right: 9 10 11 12 14 44
     statement <ast> (48)
-        on left: 17 18 19 20 21 22
-        on right: 4 15 16
+        on left: 16 17 18 19 20 21
+        on right: 4 14 15
     declaration <ast> (49)
+        on left: 22
+        on right: 16
+    assignment <ast> (50)
         on left: 23
         on right: 17
-    assignment <ast> (50)
-        on left: 24
-        on right: 18
     types <ast> (51)
-        on left: 25 26 27 28
-        on right: 23 45 47 48
+        on left: 24 25 26 27
+        on right: 22 44 46 47
     expression <ast> (52)
-        on left: 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44
-        on right: 9 10 11 12 13 21 22 23 24 33 34 35 36 37 38 39 40 41 42 43 44 50 51
+        on left: 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43
+        on right: 9 10 11 13 20 21 22 23 32 33 34 35 36 37 38 39 40 41 42 43 49 50
     function_def <ast> (53)
-        on left: 45
+        on left: 44
         on right: 3
     function_call <ast> (54)
-        on left: 46
-        on right: 19
+        on left: 45
+        on right: 18
     param_list <ast> (55)
-        on left: 47 48 49
-        on right: 45 48
+        on left: 46 47 48
+        on right: 44 47
     arg_list <ast> (56)
-        on left: 50 51 52
-        on right: 46 51
+        on left: 49 50 51
+        on right: 45 50
 
 
 State 0
@@ -201,8 +200,8 @@ State 0
 
 State 1
 
-   24 assignment: T_IDENTIFIER • T_FAI expression
-   46 function_call: T_IDENTIFIER • T_LPAREN arg_list T_RPAREN
+   23 assignment: T_IDENTIFIER • T_FAI expression
+   45 function_call: T_IDENTIFIER • T_LPAREN arg_list T_RPAREN
 
     T_LPAREN  shift, and go to state 19
     T_FAI     shift, and go to state 20
@@ -210,7 +209,7 @@ State 1
 
 State 2
 
-   21 statement: T_SENDBACK • expression
+   20 statement: T_SENDBACK • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -223,7 +222,7 @@ State 2
 
 State 3
 
-   22 statement: T_THROWUP • T_LPAREN expression T_RPAREN
+   21 statement: T_THROWUP • T_LPAREN expression T_RPAREN
 
     T_LPAREN  shift, and go to state 27
 
@@ -244,7 +243,7 @@ State 4
 
 State 5
 
-   45 function_def: T_A_NEW_ONE • types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
+   44 function_def: T_A_NEW_ONE • types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_ZIP_TYPE     shift, and go to state 6
     T_WHOLEY_TYPE  shift, and go to state 7
@@ -256,30 +255,30 @@ State 5
 
 State 6
 
-   28 types: T_ZIP_TYPE •
+   27 types: T_ZIP_TYPE •
 
-    $default  reduce using rule 28 (types)
+    $default  reduce using rule 27 (types)
 
 
 State 7
 
-   25 types: T_WHOLEY_TYPE •
+   24 types: T_WHOLEY_TYPE •
 
-    $default  reduce using rule 25 (types)
+    $default  reduce using rule 24 (types)
 
 
 State 8
 
-   26 types: T_FLOATY_TYPE •
+   25 types: T_FLOATY_TYPE •
 
-    $default  reduce using rule 26 (types)
+    $default  reduce using rule 25 (types)
 
 
 State 9
 
-   27 types: T_STRING_TYPE •
+   26 types: T_STRING_TYPE •
 
-    $default  reduce using rule 27 (types)
+    $default  reduce using rule 26 (types)
 
 
 State 10
@@ -317,9 +316,9 @@ State 11
 
 State 12
 
-   20 statement: block •
+   19 statement: block •
 
-    $default  reduce using rule 20 (statement)
+    $default  reduce using rule 19 (statement)
 
 
 State 13
@@ -331,21 +330,21 @@ State 13
 
 State 14
 
-   17 statement: declaration •
+   16 statement: declaration •
 
-    $default  reduce using rule 17 (statement)
+    $default  reduce using rule 16 (statement)
 
 
 State 15
 
-   18 statement: assignment •
+   17 statement: assignment •
 
-    $default  reduce using rule 18 (statement)
+    $default  reduce using rule 17 (statement)
 
 
 State 16
 
-   23 declaration: types • T_IDENTIFIER T_FAI expression
+   22 declaration: types • T_IDENTIFIER T_FAI expression
 
     T_IDENTIFIER  shift, and go to state 39
 
@@ -359,14 +358,14 @@ State 17
 
 State 18
 
-   19 statement: function_call •
+   18 statement: function_call •
 
-    $default  reduce using rule 19 (statement)
+    $default  reduce using rule 18 (statement)
 
 
 State 19
 
-   46 function_call: T_IDENTIFIER T_LPAREN • arg_list T_RPAREN
+   45 function_call: T_IDENTIFIER T_LPAREN • arg_list T_RPAREN
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -374,7 +373,7 @@ State 19
     T_STRING      shift, and go to state 24
     T_LPAREN      shift, and go to state 25
 
-    $default  reduce using rule 52 (arg_list)
+    $default  reduce using rule 51 (arg_list)
 
     expression  go to state 40
     arg_list    go to state 41
@@ -382,7 +381,7 @@ State 19
 
 State 20
 
-   24 assignment: T_IDENTIFIER T_FAI • expression
+   23 assignment: T_IDENTIFIER T_FAI • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -395,35 +394,35 @@ State 20
 
 State 21
 
-   29 expression: T_WHOLEY •
+   28 expression: T_WHOLEY •
 
-    $default  reduce using rule 29 (expression)
+    $default  reduce using rule 28 (expression)
 
 
 State 22
 
-   30 expression: T_FLOATY •
+   29 expression: T_FLOATY •
 
-    $default  reduce using rule 30 (expression)
+    $default  reduce using rule 29 (expression)
 
 
 State 23
 
-   32 expression: T_IDENTIFIER •
-
-    $default  reduce using rule 32 (expression)
-
-
-State 24
-
-   31 expression: T_STRING •
+   31 expression: T_IDENTIFIER •
 
     $default  reduce using rule 31 (expression)
 
 
+State 24
+
+   30 expression: T_STRING •
+
+    $default  reduce using rule 30 (expression)
+
+
 State 25
 
-   44 expression: T_LPAREN • expression T_RPAREN
+   43 expression: T_LPAREN • expression T_RPAREN
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -436,18 +435,18 @@ State 25
 
 State 26
 
-   21 statement: T_SENDBACK expression •
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   20 statement: T_SENDBACK expression •
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -461,12 +460,12 @@ State 26
     T_FAI       shift, and go to state 53
     T_NEQUAL    shift, and go to state 54
 
-    $default  reduce using rule 21 (statement)
+    $default  reduce using rule 20 (statement)
 
 
 State 27
 
-   22 statement: T_THROWUP T_LPAREN • expression T_RPAREN
+   21 statement: T_THROWUP T_LPAREN • expression T_RPAREN
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -487,7 +486,7 @@ State 28
 
 State 29
 
-   12 for_block: T_ONE_BY_ONE • T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+   12 for_block: T_ONE_BY_ONE • T_LPAREN T_IDENTIFIER T_IN T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_LPAREN  shift, and go to state 57
 
@@ -529,7 +528,7 @@ State 34
 
 State 35
 
-   45 function_def: T_A_NEW_ONE types • T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
+   44 function_def: T_A_NEW_ONE types • T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_IDENTIFIER  shift, and go to state 60
 
@@ -557,25 +556,25 @@ State 38
 
 State 39
 
-   23 declaration: types T_IDENTIFIER • T_FAI expression
+   22 declaration: types T_IDENTIFIER • T_FAI expression
 
     T_FAI  shift, and go to state 61
 
 
 State 40
 
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-   50 arg_list: expression •
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+   49 arg_list: expression •
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -589,13 +588,13 @@ State 40
     T_FAI       shift, and go to state 53
     T_NEQUAL    shift, and go to state 54
 
-    $default  reduce using rule 50 (arg_list)
+    $default  reduce using rule 49 (arg_list)
 
 
 State 41
 
-   46 function_call: T_IDENTIFIER T_LPAREN arg_list • T_RPAREN
-   51 arg_list: arg_list • T_COMMA expression
+   45 function_call: T_IDENTIFIER T_LPAREN arg_list • T_RPAREN
+   50 arg_list: arg_list • T_COMMA expression
 
     T_RPAREN  shift, and go to state 62
     T_COMMA   shift, and go to state 63
@@ -603,18 +602,18 @@ State 41
 
 State 42
 
-   24 assignment: T_IDENTIFIER T_FAI expression •
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   23 assignment: T_IDENTIFIER T_FAI expression •
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -628,23 +627,23 @@ State 42
     T_FAI       shift, and go to state 53
     T_NEQUAL    shift, and go to state 54
 
-    $default  reduce using rule 24 (assignment)
+    $default  reduce using rule 23 (assignment)
 
 
 State 43
 
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-   44           | T_LPAREN expression • T_RPAREN
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+   43           | T_LPAREN expression • T_RPAREN
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -662,7 +661,7 @@ State 43
 
 State 44
 
-   36 expression: expression T_PLUS • expression
+   35 expression: expression T_PLUS • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -675,7 +674,7 @@ State 44
 
 State 45
 
-   37 expression: expression T_MINUS • expression
+   36 expression: expression T_MINUS • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -688,7 +687,7 @@ State 45
 
 State 46
 
-   39 expression: expression T_MULTIPLY • expression
+   38 expression: expression T_MULTIPLY • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -701,7 +700,7 @@ State 46
 
 State 47
 
-   38 expression: expression T_DIVIDE • expression
+   37 expression: expression T_DIVIDE • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -714,7 +713,7 @@ State 47
 
 State 48
 
-   40 expression: expression T_LESS • expression
+   39 expression: expression T_LESS • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -727,7 +726,7 @@ State 48
 
 State 49
 
-   41 expression: expression T_GREATER • expression
+   40 expression: expression T_GREATER • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -740,7 +739,7 @@ State 49
 
 State 50
 
-   34 expression: expression T_GEQUAL • expression
+   33 expression: expression T_GEQUAL • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -753,7 +752,7 @@ State 50
 
 State 51
 
-   35 expression: expression T_LEQUAL • expression
+   34 expression: expression T_LEQUAL • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -766,7 +765,7 @@ State 51
 
 State 52
 
-   43 expression: expression T_EQUAL • expression
+   42 expression: expression T_EQUAL • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -779,7 +778,7 @@ State 52
 
 State 53
 
-   42 expression: expression T_FAI • expression
+   41 expression: expression T_FAI • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -792,7 +791,7 @@ State 53
 
 State 54
 
-   33 expression: expression T_NEQUAL • expression
+   32 expression: expression T_NEQUAL • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -805,18 +804,18 @@ State 54
 
 State 55
 
-   22 statement: T_THROWUP T_LPAREN expression • T_RPAREN
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   21 statement: T_THROWUP T_LPAREN expression • T_RPAREN
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -848,7 +847,7 @@ State 56
 
 State 57
 
-   12 for_block: T_ONE_BY_ONE T_LPAREN • T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+   12 for_block: T_ONE_BY_ONE T_LPAREN • T_IDENTIFIER T_IN T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_IDENTIFIER  shift, and go to state 78
 
@@ -875,14 +874,14 @@ State 59
 
 State 60
 
-   45 function_def: T_A_NEW_ONE types T_IDENTIFIER • T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
+   44 function_def: T_A_NEW_ONE types T_IDENTIFIER • T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_LPAREN  shift, and go to state 80
 
 
 State 61
 
-   23 declaration: types T_IDENTIFIER T_FAI • expression
+   22 declaration: types T_IDENTIFIER T_FAI • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -895,14 +894,14 @@ State 61
 
 State 62
 
-   46 function_call: T_IDENTIFIER T_LPAREN arg_list T_RPAREN •
+   45 function_call: T_IDENTIFIER T_LPAREN arg_list T_RPAREN •
 
-    $default  reduce using rule 46 (function_call)
+    $default  reduce using rule 45 (function_call)
 
 
 State 63
 
-   51 arg_list: arg_list T_COMMA • expression
+   50 arg_list: arg_list T_COMMA • expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -915,25 +914,46 @@ State 63
 
 State 64
 
-   44 expression: T_LPAREN expression T_RPAREN •
+   43 expression: T_LPAREN expression T_RPAREN •
 
-    $default  reduce using rule 44 (expression)
+    $default  reduce using rule 43 (expression)
 
 
 State 65
 
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   36           | expression T_PLUS expression •
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   35           | expression T_PLUS expression •
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+
+    T_MULTIPLY  shift, and go to state 46
+    T_DIVIDE    shift, and go to state 47
+
+    $default  reduce using rule 35 (expression)
+
+
+State 66
+
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   36           | expression T_MINUS expression •
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_MULTIPLY  shift, and go to state 46
     T_DIVIDE    shift, and go to state 47
@@ -941,77 +961,86 @@ State 65
     $default  reduce using rule 36 (expression)
 
 
-State 66
-
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   37           | expression T_MINUS expression •
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-
-    T_MULTIPLY  shift, and go to state 46
-    T_DIVIDE    shift, and go to state 47
-
-    $default  reduce using rule 37 (expression)
-
-
 State 67
 
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   39           | expression T_MULTIPLY expression •
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-
-    $default  reduce using rule 39 (expression)
-
-
-State 68
-
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   38           | expression T_DIVIDE expression •
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   38           | expression T_MULTIPLY expression •
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     $default  reduce using rule 38 (expression)
 
 
+State 68
+
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   37           | expression T_DIVIDE expression •
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+
+    $default  reduce using rule 37 (expression)
+
+
 State 69
 
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   40           | expression T_LESS expression •
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   39           | expression T_LESS expression •
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+
+    T_PLUS      shift, and go to state 44
+    T_MINUS     shift, and go to state 45
+    T_MULTIPLY  shift, and go to state 46
+    T_DIVIDE    shift, and go to state 47
+    T_LESS      shift, and go to state 48
+    T_GREATER   shift, and go to state 49
+    T_GEQUAL    shift, and go to state 50
+    T_LEQUAL    shift, and go to state 51
+    T_EQUAL     shift, and go to state 52
+    T_FAI       shift, and go to state 53
+    T_NEQUAL    shift, and go to state 54
+
+    $default  reduce using rule 39 (expression)
+
+
+State 70
+
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   40           | expression T_GREATER expression •
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -1028,170 +1057,20 @@ State 69
     $default  reduce using rule 40 (expression)
 
 
-State 70
-
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   41           | expression T_GREATER expression •
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-
-    T_PLUS      shift, and go to state 44
-    T_MINUS     shift, and go to state 45
-    T_MULTIPLY  shift, and go to state 46
-    T_DIVIDE    shift, and go to state 47
-    T_LESS      shift, and go to state 48
-    T_GREATER   shift, and go to state 49
-    T_GEQUAL    shift, and go to state 50
-    T_LEQUAL    shift, and go to state 51
-    T_EQUAL     shift, and go to state 52
-    T_FAI       shift, and go to state 53
-    T_NEQUAL    shift, and go to state 54
-
-    $default  reduce using rule 41 (expression)
-
-
 State 71
 
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   34           | expression T_GEQUAL expression •
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-
-    T_PLUS      shift, and go to state 44
-    T_MINUS     shift, and go to state 45
-    T_MULTIPLY  shift, and go to state 46
-    T_DIVIDE    shift, and go to state 47
-    T_LESS      shift, and go to state 48
-    T_GREATER   shift, and go to state 49
-    T_GEQUAL    shift, and go to state 50
-    T_LEQUAL    shift, and go to state 51
-    T_EQUAL     shift, and go to state 52
-    T_FAI       shift, and go to state 53
-    T_NEQUAL    shift, and go to state 54
-
-    $default  reduce using rule 34 (expression)
-
-
-State 72
-
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   35           | expression T_LEQUAL expression •
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-
-    T_PLUS      shift, and go to state 44
-    T_MINUS     shift, and go to state 45
-    T_MULTIPLY  shift, and go to state 46
-    T_DIVIDE    shift, and go to state 47
-    T_LESS      shift, and go to state 48
-    T_GREATER   shift, and go to state 49
-    T_GEQUAL    shift, and go to state 50
-    T_LEQUAL    shift, and go to state 51
-    T_EQUAL     shift, and go to state 52
-    T_FAI       shift, and go to state 53
-    T_NEQUAL    shift, and go to state 54
-
-    $default  reduce using rule 35 (expression)
-
-
-State 73
-
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-   43           | expression T_EQUAL expression •
-
-    T_PLUS      shift, and go to state 44
-    T_MINUS     shift, and go to state 45
-    T_MULTIPLY  shift, and go to state 46
-    T_DIVIDE    shift, and go to state 47
-    T_LESS      shift, and go to state 48
-    T_GREATER   shift, and go to state 49
-    T_GEQUAL    shift, and go to state 50
-    T_LEQUAL    shift, and go to state 51
-    T_EQUAL     shift, and go to state 52
-    T_FAI       shift, and go to state 53
-    T_NEQUAL    shift, and go to state 54
-
-    $default  reduce using rule 43 (expression)
-
-
-State 74
-
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   42           | expression T_FAI expression •
-   43           | expression • T_EQUAL expression
-
-    T_PLUS      shift, and go to state 44
-    T_MINUS     shift, and go to state 45
-    T_MULTIPLY  shift, and go to state 46
-    T_DIVIDE    shift, and go to state 47
-    T_LESS      shift, and go to state 48
-    T_GREATER   shift, and go to state 49
-    T_GEQUAL    shift, and go to state 50
-    T_LEQUAL    shift, and go to state 51
-    T_EQUAL     shift, and go to state 52
-    T_FAI       shift, and go to state 53
-    T_NEQUAL    shift, and go to state 54
-
-    $default  reduce using rule 42 (expression)
-
-
-State 75
-
-   33 expression: expression • T_NEQUAL expression
-   33           | expression T_NEQUAL expression •
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   33           | expression T_GEQUAL expression •
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -1208,28 +1087,148 @@ State 75
     $default  reduce using rule 33 (expression)
 
 
+State 72
+
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   34           | expression T_LEQUAL expression •
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+
+    T_PLUS      shift, and go to state 44
+    T_MINUS     shift, and go to state 45
+    T_MULTIPLY  shift, and go to state 46
+    T_DIVIDE    shift, and go to state 47
+    T_LESS      shift, and go to state 48
+    T_GREATER   shift, and go to state 49
+    T_GEQUAL    shift, and go to state 50
+    T_LEQUAL    shift, and go to state 51
+    T_EQUAL     shift, and go to state 52
+    T_FAI       shift, and go to state 53
+    T_NEQUAL    shift, and go to state 54
+
+    $default  reduce using rule 34 (expression)
+
+
+State 73
+
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+   42           | expression T_EQUAL expression •
+
+    T_PLUS      shift, and go to state 44
+    T_MINUS     shift, and go to state 45
+    T_MULTIPLY  shift, and go to state 46
+    T_DIVIDE    shift, and go to state 47
+    T_LESS      shift, and go to state 48
+    T_GREATER   shift, and go to state 49
+    T_GEQUAL    shift, and go to state 50
+    T_LEQUAL    shift, and go to state 51
+    T_EQUAL     shift, and go to state 52
+    T_FAI       shift, and go to state 53
+    T_NEQUAL    shift, and go to state 54
+
+    $default  reduce using rule 42 (expression)
+
+
+State 74
+
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   41           | expression T_FAI expression •
+   42           | expression • T_EQUAL expression
+
+    T_PLUS      shift, and go to state 44
+    T_MINUS     shift, and go to state 45
+    T_MULTIPLY  shift, and go to state 46
+    T_DIVIDE    shift, and go to state 47
+    T_LESS      shift, and go to state 48
+    T_GREATER   shift, and go to state 49
+    T_GEQUAL    shift, and go to state 50
+    T_LEQUAL    shift, and go to state 51
+    T_EQUAL     shift, and go to state 52
+    T_FAI       shift, and go to state 53
+    T_NEQUAL    shift, and go to state 54
+
+    $default  reduce using rule 41 (expression)
+
+
+State 75
+
+   32 expression: expression • T_NEQUAL expression
+   32           | expression T_NEQUAL expression •
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+
+    T_PLUS      shift, and go to state 44
+    T_MINUS     shift, and go to state 45
+    T_MULTIPLY  shift, and go to state 46
+    T_DIVIDE    shift, and go to state 47
+    T_LESS      shift, and go to state 48
+    T_GREATER   shift, and go to state 49
+    T_GEQUAL    shift, and go to state 50
+    T_LEQUAL    shift, and go to state 51
+    T_EQUAL     shift, and go to state 52
+    T_FAI       shift, and go to state 53
+    T_NEQUAL    shift, and go to state 54
+
+    $default  reduce using rule 32 (expression)
+
+
 State 76
 
-   22 statement: T_THROWUP T_LPAREN expression T_RPAREN •
+   21 statement: T_THROWUP T_LPAREN expression T_RPAREN •
 
-    $default  reduce using rule 22 (statement)
+    $default  reduce using rule 21 (statement)
 
 
 State 77
 
     9 if_block: T_IMAGINE T_LPAREN expression • T_RPAREN T_LCURPAR statements T_RCURPAR
    10         | T_IMAGINE T_LPAREN expression • T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -1247,7 +1246,7 @@ State 77
 
 State 78
 
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER • T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER • T_IN T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_IN  shift, and go to state 84
 
@@ -1255,17 +1254,17 @@ State 78
 State 79
 
    11 while_block: T_AS_LONG_AS T_LPAREN expression • T_RPAREN T_LCURPAR statements T_RCURPAR
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -1283,14 +1282,14 @@ State 79
 
 State 80
 
-   45 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN • param_list T_RPAREN T_LCURPAR statements T_RCURPAR
+   44 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN • param_list T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_ZIP_TYPE     shift, and go to state 6
     T_WHOLEY_TYPE  shift, and go to state 7
     T_FLOATY_TYPE  shift, and go to state 8
     T_STRING_TYPE  shift, and go to state 9
 
-    $default  reduce using rule 49 (param_list)
+    $default  reduce using rule 48 (param_list)
 
     types       go to state 86
     param_list  go to state 87
@@ -1298,18 +1297,18 @@ State 80
 
 State 81
 
-   23 declaration: types T_IDENTIFIER T_FAI expression •
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   22 declaration: types T_IDENTIFIER T_FAI expression •
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -1323,23 +1322,23 @@ State 81
     T_FAI       shift, and go to state 53
     T_NEQUAL    shift, and go to state 54
 
-    $default  reduce using rule 23 (declaration)
+    $default  reduce using rule 22 (declaration)
 
 
 State 82
 
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
-   51 arg_list: arg_list T_COMMA expression •
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+   50 arg_list: arg_list T_COMMA expression •
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -1353,7 +1352,7 @@ State 82
     T_FAI       shift, and go to state 53
     T_NEQUAL    shift, and go to state 54
 
-    $default  reduce using rule 51 (arg_list)
+    $default  reduce using rule 50 (arg_list)
 
 
 State 83
@@ -1366,7 +1365,7 @@ State 83
 
 State 84
 
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN • T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN • T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_LPAREN  shift, and go to state 89
 
@@ -1380,15 +1379,15 @@ State 85
 
 State 86
 
-   47 param_list: types • T_IDENTIFIER
+   46 param_list: types • T_IDENTIFIER
 
     T_IDENTIFIER  shift, and go to state 91
 
 
 State 87
 
-   45 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list • T_RPAREN T_LCURPAR statements T_RCURPAR
-   48 param_list: param_list • T_COMMA types T_IDENTIFIER
+   44 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list • T_RPAREN T_LCURPAR statements T_RCURPAR
+   47 param_list: param_list • T_COMMA types T_IDENTIFIER
 
     T_RPAREN  shift, and go to state 92
     T_COMMA   shift, and go to state 93
@@ -1419,7 +1418,7 @@ State 88
 
 State 89
 
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN • expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN • step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -1427,7 +1426,8 @@ State 89
     T_STRING      shift, and go to state 24
     T_LPAREN      shift, and go to state 25
 
-    expression  go to state 96
+    step        go to state 96
+    expression  go to state 97
 
 
 State 90
@@ -1444,7 +1444,7 @@ State 90
     T_STRING_TYPE  shift, and go to state 9
 
     block          go to state 12
-    statements     go to state 97
+    statements     go to state 98
     statement      go to state 95
     declaration    go to state 14
     assignment     go to state 15
@@ -1454,48 +1454,48 @@ State 90
 
 State 91
 
-   47 param_list: types T_IDENTIFIER •
+   46 param_list: types T_IDENTIFIER •
 
-    $default  reduce using rule 47 (param_list)
+    $default  reduce using rule 46 (param_list)
 
 
 State 92
 
-   45 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN • T_LCURPAR statements T_RCURPAR
+   44 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN • T_LCURPAR statements T_RCURPAR
 
-    T_LCURPAR  shift, and go to state 98
+    T_LCURPAR  shift, and go to state 99
 
 
 State 93
 
-   48 param_list: param_list T_COMMA • types T_IDENTIFIER
+   47 param_list: param_list T_COMMA • types T_IDENTIFIER
 
     T_ZIP_TYPE     shift, and go to state 6
     T_WHOLEY_TYPE  shift, and go to state 7
     T_FLOATY_TYPE  shift, and go to state 8
     T_STRING_TYPE  shift, and go to state 9
 
-    types  go to state 99
+    types  go to state 100
 
 
 State 94
 
     9 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements • T_RCURPAR
    10         | T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements • T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
-   15 statements: statements • statement ';'
+   14 statements: statements • statement ';'
 
     T_IDENTIFIER   shift, and go to state 1
     T_SENDBACK     shift, and go to state 2
     T_THROWUP      shift, and go to state 3
     T_GO           shift, and go to state 4
-    T_RCURPAR      shift, and go to state 100
+    T_RCURPAR      shift, and go to state 101
     T_ZIP_TYPE     shift, and go to state 6
     T_WHOLEY_TYPE  shift, and go to state 7
     T_FLOATY_TYPE  shift, and go to state 8
     T_STRING_TYPE  shift, and go to state 9
 
     block          go to state 12
-    statement      go to state 101
+    statement      go to state 102
     declaration    go to state 14
     assignment     go to state 15
     types          go to state 16
@@ -1504,25 +1504,32 @@ State 94
 
 State 95
 
-   16 statements: statement • ';'
+   15 statements: statement • ';'
 
-    ';'  shift, and go to state 102
+    ';'  shift, and go to state 103
 
 
 State 96
 
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression • optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN step • T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+
+    T_RPAREN  shift, and go to state 104
+
+
+State 97
+
+   13 step: expression • T_COMMA expression T_COMMA expression
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -1532,55 +1539,29 @@ State 96
     T_GREATER   shift, and go to state 49
     T_GEQUAL    shift, and go to state 50
     T_LEQUAL    shift, and go to state 51
-    T_COMMA     shift, and go to state 103
+    T_COMMA     shift, and go to state 105
     T_EQUAL     shift, and go to state 52
     T_FAI       shift, and go to state 53
     T_NEQUAL    shift, and go to state 54
 
-    $default  reduce using rule 14 (optional_step)
-
-    optional_step  go to state 104
-
-
-State 97
-
-   11 while_block: T_AS_LONG_AS T_LPAREN expression T_RPAREN T_LCURPAR statements • T_RCURPAR
-   15 statements: statements • statement ';'
-
-    T_IDENTIFIER   shift, and go to state 1
-    T_SENDBACK     shift, and go to state 2
-    T_THROWUP      shift, and go to state 3
-    T_GO           shift, and go to state 4
-    T_RCURPAR      shift, and go to state 105
-    T_ZIP_TYPE     shift, and go to state 6
-    T_WHOLEY_TYPE  shift, and go to state 7
-    T_FLOATY_TYPE  shift, and go to state 8
-    T_STRING_TYPE  shift, and go to state 9
-
-    block          go to state 12
-    statement      go to state 101
-    declaration    go to state 14
-    assignment     go to state 15
-    types          go to state 16
-    function_call  go to state 18
-
 
 State 98
 
-   45 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR • statements T_RCURPAR
+   11 while_block: T_AS_LONG_AS T_LPAREN expression T_RPAREN T_LCURPAR statements • T_RCURPAR
+   14 statements: statements • statement ';'
 
     T_IDENTIFIER   shift, and go to state 1
     T_SENDBACK     shift, and go to state 2
     T_THROWUP      shift, and go to state 3
     T_GO           shift, and go to state 4
+    T_RCURPAR      shift, and go to state 106
     T_ZIP_TYPE     shift, and go to state 6
     T_WHOLEY_TYPE  shift, and go to state 7
     T_FLOATY_TYPE  shift, and go to state 8
     T_STRING_TYPE  shift, and go to state 9
 
     block          go to state 12
-    statements     go to state 106
-    statement      go to state 95
+    statement      go to state 102
     declaration    go to state 14
     assignment     go to state 15
     types          go to state 16
@@ -1589,38 +1570,67 @@ State 98
 
 State 99
 
-   48 param_list: param_list T_COMMA types • T_IDENTIFIER
+   44 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR • statements T_RCURPAR
 
-    T_IDENTIFIER  shift, and go to state 107
+    T_IDENTIFIER   shift, and go to state 1
+    T_SENDBACK     shift, and go to state 2
+    T_THROWUP      shift, and go to state 3
+    T_GO           shift, and go to state 4
+    T_ZIP_TYPE     shift, and go to state 6
+    T_WHOLEY_TYPE  shift, and go to state 7
+    T_FLOATY_TYPE  shift, and go to state 8
+    T_STRING_TYPE  shift, and go to state 9
+
+    block          go to state 12
+    statements     go to state 107
+    statement      go to state 95
+    declaration    go to state 14
+    assignment     go to state 15
+    types          go to state 16
+    function_call  go to state 18
 
 
 State 100
 
-    9 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR •
-   10         | T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR • T_NAH T_LCURPAR statements T_RCURPAR
+   47 param_list: param_list T_COMMA types • T_IDENTIFIER
 
-    T_NAH  shift, and go to state 108
-
-    $default  reduce using rule 9 (if_block)
+    T_IDENTIFIER  shift, and go to state 108
 
 
 State 101
 
-   15 statements: statements statement • ';'
+    9 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR •
+   10         | T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR • T_NAH T_LCURPAR statements T_RCURPAR
 
-    ';'  shift, and go to state 109
+    T_NAH  shift, and go to state 109
+
+    $default  reduce using rule 9 (if_block)
 
 
 State 102
 
-   16 statements: statement ';' •
+   14 statements: statements statement • ';'
 
-    $default  reduce using rule 16 (statements)
+    ';'  shift, and go to state 110
 
 
 State 103
 
-   13 optional_step: T_COMMA • expression
+   15 statements: statement ';' •
+
+    $default  reduce using rule 15 (statements)
+
+
+State 104
+
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN step T_RPAREN • T_RPAREN T_LCURPAR statements T_RCURPAR
+
+    T_RPAREN  shift, and go to state 111
+
+
+State 105
+
+   13 step: expression T_COMMA • expression T_COMMA expression
 
     T_WHOLEY      shift, and go to state 21
     T_FLOATY      shift, and go to state 22
@@ -1628,81 +1638,81 @@ State 103
     T_STRING      shift, and go to state 24
     T_LPAREN      shift, and go to state 25
 
-    expression  go to state 110
+    expression  go to state 112
 
 
-State 104
-
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step • T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
-
-    T_RPAREN  shift, and go to state 111
-
-
-State 105
+State 106
 
    11 while_block: T_AS_LONG_AS T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR •
 
     $default  reduce using rule 11 (while_block)
 
 
-State 106
+State 107
 
-   15 statements: statements • statement ';'
-   45 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements • T_RCURPAR
+   14 statements: statements • statement ';'
+   44 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements • T_RCURPAR
 
     T_IDENTIFIER   shift, and go to state 1
     T_SENDBACK     shift, and go to state 2
     T_THROWUP      shift, and go to state 3
     T_GO           shift, and go to state 4
-    T_RCURPAR      shift, and go to state 112
+    T_RCURPAR      shift, and go to state 113
     T_ZIP_TYPE     shift, and go to state 6
     T_WHOLEY_TYPE  shift, and go to state 7
     T_FLOATY_TYPE  shift, and go to state 8
     T_STRING_TYPE  shift, and go to state 9
 
     block          go to state 12
-    statement      go to state 101
+    statement      go to state 102
     declaration    go to state 14
     assignment     go to state 15
     types          go to state 16
     function_call  go to state 18
 
 
-State 107
-
-   48 param_list: param_list T_COMMA types T_IDENTIFIER •
-
-    $default  reduce using rule 48 (param_list)
-
-
 State 108
 
-   10 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH • T_LCURPAR statements T_RCURPAR
+   47 param_list: param_list T_COMMA types T_IDENTIFIER •
 
-    T_LCURPAR  shift, and go to state 113
+    $default  reduce using rule 47 (param_list)
 
 
 State 109
 
-   15 statements: statements statement ';' •
+   10 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH • T_LCURPAR statements T_RCURPAR
 
-    $default  reduce using rule 15 (statements)
+    T_LCURPAR  shift, and go to state 114
 
 
 State 110
 
-   13 optional_step: T_COMMA expression •
-   33 expression: expression • T_NEQUAL expression
-   34           | expression • T_GEQUAL expression
-   35           | expression • T_LEQUAL expression
-   36           | expression • T_PLUS expression
-   37           | expression • T_MINUS expression
-   38           | expression • T_DIVIDE expression
-   39           | expression • T_MULTIPLY expression
-   40           | expression • T_LESS expression
-   41           | expression • T_GREATER expression
-   42           | expression • T_FAI expression
-   43           | expression • T_EQUAL expression
+   14 statements: statements statement ';' •
+
+    $default  reduce using rule 14 (statements)
+
+
+State 111
+
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN step T_RPAREN T_RPAREN • T_LCURPAR statements T_RCURPAR
+
+    T_LCURPAR  shift, and go to state 115
+
+
+State 112
+
+   13 step: expression T_COMMA expression • T_COMMA expression
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
 
     T_PLUS      shift, and go to state 44
     T_MINUS     shift, and go to state 45
@@ -1712,28 +1722,20 @@ State 110
     T_GREATER   shift, and go to state 49
     T_GEQUAL    shift, and go to state 50
     T_LEQUAL    shift, and go to state 51
+    T_COMMA     shift, and go to state 116
     T_EQUAL     shift, and go to state 52
     T_FAI       shift, and go to state 53
     T_NEQUAL    shift, and go to state 54
 
-    $default  reduce using rule 13 (optional_step)
-
-
-State 111
-
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN • T_RPAREN T_LCURPAR statements T_RCURPAR
-
-    T_RPAREN  shift, and go to state 114
-
-
-State 112
-
-   45 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR •
-
-    $default  reduce using rule 45 (function_def)
-
 
 State 113
+
+   44 function_def: T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR •
+
+    $default  reduce using rule 44 (function_def)
+
+
+State 114
 
    10 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR • statements T_RCURPAR
 
@@ -1747,7 +1749,7 @@ State 113
     T_STRING_TYPE  shift, and go to state 9
 
     block          go to state 12
-    statements     go to state 115
+    statements     go to state 117
     statement      go to state 95
     declaration    go to state 14
     assignment     go to state 15
@@ -1755,39 +1757,9 @@ State 113
     function_call  go to state 18
 
 
-State 114
-
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN • T_LCURPAR statements T_RCURPAR
-
-    T_LCURPAR  shift, and go to state 116
-
-
 State 115
 
-   10 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements • T_RCURPAR
-   15 statements: statements • statement ';'
-
-    T_IDENTIFIER   shift, and go to state 1
-    T_SENDBACK     shift, and go to state 2
-    T_THROWUP      shift, and go to state 3
-    T_GO           shift, and go to state 4
-    T_RCURPAR      shift, and go to state 117
-    T_ZIP_TYPE     shift, and go to state 6
-    T_WHOLEY_TYPE  shift, and go to state 7
-    T_FLOATY_TYPE  shift, and go to state 8
-    T_STRING_TYPE  shift, and go to state 9
-
-    block          go to state 12
-    statement      go to state 101
-    declaration    go to state 14
-    assignment     go to state 15
-    types          go to state 16
-    function_call  go to state 18
-
-
-State 116
-
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR • statements T_RCURPAR
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR • statements T_RCURPAR
 
     T_IDENTIFIER   shift, and go to state 1
     T_SENDBACK     shift, and go to state 2
@@ -1807,30 +1779,59 @@ State 116
     function_call  go to state 18
 
 
+State 116
+
+   13 step: expression T_COMMA expression T_COMMA • expression
+
+    T_WHOLEY      shift, and go to state 21
+    T_FLOATY      shift, and go to state 22
+    T_IDENTIFIER  shift, and go to state 23
+    T_STRING      shift, and go to state 24
+    T_LPAREN      shift, and go to state 25
+
+    expression  go to state 119
+
+
 State 117
 
-   10 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR •
-
-    $default  reduce using rule 10 (if_block)
-
-
-State 118
-
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements • T_RCURPAR
-   15 statements: statements • statement ';'
+   10 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements • T_RCURPAR
+   14 statements: statements • statement ';'
 
     T_IDENTIFIER   shift, and go to state 1
     T_SENDBACK     shift, and go to state 2
     T_THROWUP      shift, and go to state 3
     T_GO           shift, and go to state 4
-    T_RCURPAR      shift, and go to state 119
+    T_RCURPAR      shift, and go to state 120
     T_ZIP_TYPE     shift, and go to state 6
     T_WHOLEY_TYPE  shift, and go to state 7
     T_FLOATY_TYPE  shift, and go to state 8
     T_STRING_TYPE  shift, and go to state 9
 
     block          go to state 12
-    statement      go to state 101
+    statement      go to state 102
+    declaration    go to state 14
+    assignment     go to state 15
+    types          go to state 16
+    function_call  go to state 18
+
+
+State 118
+
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR statements • T_RCURPAR
+   14 statements: statements • statement ';'
+
+    T_IDENTIFIER   shift, and go to state 1
+    T_SENDBACK     shift, and go to state 2
+    T_THROWUP      shift, and go to state 3
+    T_GO           shift, and go to state 4
+    T_RCURPAR      shift, and go to state 121
+    T_ZIP_TYPE     shift, and go to state 6
+    T_WHOLEY_TYPE  shift, and go to state 7
+    T_FLOATY_TYPE  shift, and go to state 8
+    T_STRING_TYPE  shift, and go to state 9
+
+    block          go to state 12
+    statement      go to state 102
     declaration    go to state 14
     assignment     go to state 15
     types          go to state 16
@@ -1839,6 +1840,43 @@ State 118
 
 State 119
 
-   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR •
+   13 step: expression T_COMMA expression T_COMMA expression •
+   32 expression: expression • T_NEQUAL expression
+   33           | expression • T_GEQUAL expression
+   34           | expression • T_LEQUAL expression
+   35           | expression • T_PLUS expression
+   36           | expression • T_MINUS expression
+   37           | expression • T_DIVIDE expression
+   38           | expression • T_MULTIPLY expression
+   39           | expression • T_LESS expression
+   40           | expression • T_GREATER expression
+   41           | expression • T_FAI expression
+   42           | expression • T_EQUAL expression
+
+    T_PLUS      shift, and go to state 44
+    T_MINUS     shift, and go to state 45
+    T_MULTIPLY  shift, and go to state 46
+    T_DIVIDE    shift, and go to state 47
+    T_LESS      shift, and go to state 48
+    T_GREATER   shift, and go to state 49
+    T_GEQUAL    shift, and go to state 50
+    T_LEQUAL    shift, and go to state 51
+    T_EQUAL     shift, and go to state 52
+    T_FAI       shift, and go to state 53
+    T_NEQUAL    shift, and go to state 54
+
+    $default  reduce using rule 13 (step)
+
+
+State 120
+
+   10 if_block: T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR •
+
+    $default  reduce using rule 10 (if_block)
+
+
+State 121
+
+   12 for_block: T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR •
 
     $default  reduce using rule 12 (for_block)

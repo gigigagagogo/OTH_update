@@ -1,3 +1,10 @@
-floaty a -> 5.5;
-a -> a +1.1;
+whole_y a -> 6;
+a -> a + 1;
+throw_up(a + ^\gms^);
+go
+one_by_one (a in (0,5,1)){
+	throw_up(a + ^\so^);
+}
+all_set;
+throw_up(^\gms^);
 throw_up(a);

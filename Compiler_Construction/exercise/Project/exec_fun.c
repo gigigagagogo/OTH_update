@@ -282,4 +282,36 @@ void handle_while(ast_type *node, Scope *current_scope){
 
     exit_scope(loop_scope);
 }
+void handle_for(ast_type *node, Scope *current_scope) {
+    Scope *loop_scope = enter_scope(current_scope);
+    // Variabile del ciclo
+    char *var_name = node->child[0]->val.s;
+ 
+    if (lookup(loop_scope, var_name)) {
+        printf("Error: Variable '%s' already exists in the current scope.\n", var_name);
+        exit(EXIT_FAILURE);
+    }
+
+
+    ast_type *step_node = node->child[1];
+    int start_value = executor(step_node->child[0], current_scope).u.i; // Inizio
+    int end_value = executor(step_node->child[1], current_scope).u.i;   // Fine
+    int step = executor(step_node->child[2], current_scope).u.i;        // Passo
+
+    if (step <= 0) {
+        printf("Error: Step value in 'for' must be a positive integer.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // Inizializza la variabile del ciclo
+    value_t loop_var = { .type = 0, .u.i = start_value };
+    ht_set(loop_scope->symbolTable, var_name, loop_var);
+
+    while (loop_var.u.i < end_value) {
+        executor(node->child[2], loop_scope); 
+        loop_var.u.i += step; 
+        ht_set(loop_scope->symbolTable, var_name, loop_var); 
+    }
+    current_scope = exit_scope(loop_scope);
+}
 

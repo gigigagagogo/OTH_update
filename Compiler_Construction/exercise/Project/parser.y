@@ -83,7 +83,7 @@ Scope *current_scope = NULL;
 %token  <str>T_STRING
 %token <op> T_PLUS T_MINUS T_MULTIPLY T_DIVIDE T_LESS T_GREATER T_GEQUAL T_LEQUAL 
 %type <ast> expression statements statement types assignment declaration if_block while_block global_declaration function_def block control_block for_block 
-%type <ast> optional_step arg_list param_list function_call START 
+%type <ast> step arg_list param_list function_call START 
 %token <str>T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_IN T_LPAREN T_RPAREN T_LCURPAR T_RCURPAR T_A_NEW_ONE 
 T_ZIP_TYPE T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE T_EQUAL
 %right T_FAI T_EQUAL T_NEQUAL T_LESS T_GREATER T_LEQUAL T_GEQUAL T_COMMA  
@@ -131,18 +131,16 @@ while_block:
     ;
 
 for_block:
-	T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN expression optional_step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
+	T_ONE_BY_ONE T_LPAREN T_IDENTIFIER T_IN T_LPAREN step T_RPAREN T_RPAREN T_LCURPAR statements T_RCURPAR
 	{ 
-		$$ = node4(_FOR, node0(_IDENTIFIER), $6, $7, $11);
+		$$ = node3(_FOR, node0(_IDENTIFIER), $6, $10);
 		$$->child[0]->val.s = $3;
-		current_scope = enter_scope(current_scope); //Scope "for" variable 
 	}
 	; 
 
-optional_step:
-	     T_COMMA expression { $$ = node1(_OPTSTEP, $2); }
-	     | %empty { $$ = NULL; }
-	     ;
+step:
+	expression T_COMMA expression T_COMMA expression { $$ = node3(_OPTSTEP, $1, $3, $5); }
+	;
 statements:
 	statements statement ';' { $$ = node2(_STATEMENTS, $1, $2); }    
 	| statement ';' { $$ = $1;}
@@ -372,6 +370,10 @@ value_t executor(ast_type *node, Scope *current_scope) {
 	}
 	case _WHILE: {
 		handle_while(node, current_scope);
+		break;	
+	}
+	case _FOR: {
+		handle_for(node, current_scope);
 		break;	
 	}	
 	default: {
