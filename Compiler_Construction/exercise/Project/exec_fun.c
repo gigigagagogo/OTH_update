@@ -110,9 +110,9 @@ value_t handle_minus(value_t left, value_t right, value_t result){
 	if ((left.type == 0 && right.type == 0) ||
     	(left.type == 1 && right.type == 1)) {
 		if(left.type == 0 && right.type == 0){
-			result.u.i = left.u.i + right.u.i;
+			result.u.i = left.u.i - right.u.i;
 		}else if(left.type == 1 && right.type == 1){
-			result.u.d = left.u.d + right.u.d;
+			result.u.d = left.u.d - right.u.d;
 		}else if(left.type == 2 || right.type == 2){
 			printf("Error: minus operator requires numeric operands (int or double).\n");
 			exit(EXIT_FAILURE);
@@ -286,12 +286,12 @@ void handle_for(ast_type *node, Scope *current_scope) {
     Scope *loop_scope = enter_scope(current_scope);
     // Variabile del ciclo
     char *var_name = node->child[0]->val.s;
- 
+    /* 
     if (lookup(loop_scope, var_name)) {
         printf("Error: Variable '%s' already exists in the current scope.\n", var_name);
         exit(EXIT_FAILURE);
     }
-
+    */
 
     ast_type *step_node = node->child[1];
     int start_value = executor(step_node->child[0], current_scope).u.i; // Inizio

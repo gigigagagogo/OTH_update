@@ -1,2 +1,10 @@
-chain a -> ^test\gms^;
+whole_y a -> 5;
+
+go
+as_long_as(a>3){
+	throw_up(^prova\gms^);
+	a -> a - 1;
+	throw_up(a);
+}
+all_set;
 throw_up(a);
