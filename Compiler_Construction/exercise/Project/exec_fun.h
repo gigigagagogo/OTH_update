@@ -13,4 +13,6 @@ void handle_if(ast_type *node, Scope *current_scope);
 void handle_while(ast_type *node, Scope *current_scope);
 value_t compare_values(value_t left, value_t right, int operator_type, value_t result);
 void handle_for(ast_type *node, Scope *current_scope); 
+void handle_new_function(ast_type *node, Scope *current_scope);
+void handle_param_list(ast_type *param_list, Scope *current_scope);
 #endif //EXEC_FUN_H

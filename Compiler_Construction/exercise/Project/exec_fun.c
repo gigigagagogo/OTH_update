@@ -314,4 +314,48 @@ void handle_for(ast_type *node, Scope *current_scope) {
     }
     current_scope = exit_scope(loop_scope);
 }
+void handle_new_function(ast_type *node, Scope *current_scope) {
+    char *func_name = node->child[1]->val.s;
+
+    if (lookup(current_scope, func_name)) {
+        printf("Error: Function '%s' already declared in this scope.\n", func_name);
+        exit(EXIT_FAILURE);
+    }
+
+    function_t *new_func = malloc(sizeof(function_t));
+    if (!new_func) {
+        printf("Error: Memory allocation for function '%s' failed.\n", func_name);
+        exit(EXIT_FAILURE);
+    }
+
+    new_func->return_type = node->child[0]->type; // Tipo di ritorno
+    new_func->param_list = node->child[2];       // Lista di parametri
+    new_func->body = node->child[3];            // Corpo della funzione
+
+    value_t func_val;
+    func_val.type = 3; // Tipo personalizzato per le funzioni
+    func_val.u.ptr = new_func;
+
+    ht_set(current_scope->functionTable, func_name, func_val);
+}
+void handle_param_list(ast_type *param_list, Scope *current_scope) {
+    while (param_list != NULL) {
+        char *param_name = param_list->child[1]->val.s; // Nome del parametro
+        int param_type = param_list->child[0]->type;    // Tipo del parametro
+
+        // Verifica se il parametro è già dichiarato
+        if (lookup(current_scope, param_name)) {
+            printf("Error: Parameter '%s' already declared in this scope.\n", param_name);
+            exit(EXIT_FAILURE);
+        }
+
+        value_t param_val;
+        param_val.type = param_type;
+
+        // Aggiungi il parametro alla symbolTable dello scope corrente
+        ht_set(current_scope->symbolTable, param_name, param_val);
+
+        param_list = param_list->child[0]; // Vai al prossimo parametro nella lista
+    }
+}
 

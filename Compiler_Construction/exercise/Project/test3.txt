@@ -1,10 +1,3 @@
-whole_y a -> 5;
-
-go
-as_long_as(a>3){
-	throw_up(^prova\gms^);
-	a -> a - 1;
-	throw_up(a);
+a_new_one whole_y test(){
+	throw_up(^ciao^);
 }
-all_set;
-throw_up(a);

@@ -7,6 +7,7 @@ Scope *enter_scope (Scope *current_scope){
 		exit(EXIT_FAILURE);
 	}
 	new_scope->symbolTable = create_ht(10);
+	new_scope->functionTable = create_ht(10);
 	new_scope->parent = current_scope;
 	return new_scope;
 }

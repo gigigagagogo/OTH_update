@@ -2165,7 +2165,7 @@ value_t executor(ast_type *node, Scope *current_scope) {
     		if (node->child[1] != NULL) {
         		executor(node->child[1], current_scope);
     		}
-    break;
+   	 break;
 	}
 	case _INT: {
             result.type = 0;
@@ -2269,7 +2269,15 @@ value_t executor(ast_type *node, Scope *current_scope) {
 	case _FOR: {
 		handle_for(node, current_scope);
 		break;	
+	}
+	case _NEWFUNC: {
+		handle_new_function(node, current_scope);
+		break;
 	}	
+	case _PARAMLIST: {
+		handle_param_list(node, current_scope);
+		break;
+	}
 	default: {
 		printf("Error type %d\n", node->type);
 		exit(EXIT_FAILURE);

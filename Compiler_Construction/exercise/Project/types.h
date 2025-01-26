@@ -11,7 +11,8 @@ typedef struct {
     union {
         int i;        
         double d;    
-        char *s;     
+        char *s;
+   	void *ptr;	
     } u;             
 } value_t;
 
@@ -39,9 +40,15 @@ typedef struct ht{
 
 typedef struct Scope{
 	ht_str *symbolTable;
+	ht_str *functionTable;
 	struct Scope *parent;
 }Scope;
 
+typedef struct {
+    int return_type;       // Tipo di ritorno (_INT_TYPE, _DOUBLE_TYPE, ecc.)
+    ast_type *param_list;  // Lista dei parametri
+    ast_type *body;        // Corpo della funzione
+} function_t;
 
 enum ast_types{
 	_START = 1,
