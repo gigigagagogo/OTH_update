@@ -88,12 +88,8 @@ extern int yydebug;
     T_EQUAL = 289,                 /* T_EQUAL  */
     T_RANDO = 290,                 /* T_RANDO  */
     T_GIMME = 291,                 /* T_GIMME  */
-    T_SIZE_UP = 292,               /* T_SIZE_UP  */
-    T_JOIN_IN = 293,               /* T_JOIN_IN  */
-    T_AND = 294,                   /* T_AND  */
-    T_OR = 295,                    /* T_OR  */
-    T_FAI = 296,                   /* T_FAI  */
-    T_NEQUAL = 297                 /* T_NEQUAL  */
+    T_FAI = 292,                   /* T_FAI  */
+    T_NEQUAL = 293                 /* T_NEQUAL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -112,7 +108,7 @@ union YYSTYPE
     value_t val;
     ast_type *ast;
 
-#line 116 "parser.tab.h"
+#line 112 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

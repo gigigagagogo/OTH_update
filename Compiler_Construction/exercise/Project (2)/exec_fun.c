@@ -141,35 +141,21 @@ void handle_print(value_t result){
     	}
 }
 
-list_t *create_list(int type, int capacity){
-	list_t *list = malloc(sizeof(list_t));
-    	if (!list) {
-        	printf("Error: Memory allocation for list failed\n");
-        	exit(EXIT_FAILURE);
-    	}
-
-    	list->type = type; // Tipo degli elementi della lista
-    	list->size = 0;    // Inizialmente vuota
-    	list->capacity = capacity;
-
-    	// Allocare spazio per gli elementi
-    	list->elements = malloc(sizeof(value_t) * capacity);
-    	if (!list->elements) {
-        	printf("Error: Memory allocation for list elements failed\n");
-        	free(list);
-        	exit(EXIT_FAILURE);
-    	}
-
-    	return list;
-}
-
 void handle_declaration(ast_type *node, Scope *current_scope) {
-    ast_type *type_node = node->child[0]; // Nodo del tipo (può essere _LIST_TYPE)
-    ast_type *id_node = node->child[1];  // Nodo dell'identificatore
-    ast_type *expr_node = node->child[2]; // Nodo dell'espressione opzionale (se presente)
-
-    
+    ast_type *type_node = node->child[0];
+    ast_type *id_node = node->child[1];
+    ast_type *expr_node = node->child[2];
+   
     int var_type = type_node->type;
+    value_t expr_value = executor(expr_node, current_scope);
+
+    // Verifica il tipo dell'espressione
+    if ((var_type == _INT_TYPE && expr_value.type != 0) ||
+        (var_type == _DOUBLE_TYPE && expr_value.type != 1) ||
+        (var_type == _STRING_TYPE && expr_value.type != 2)) {
+        printf("Type error: mismatched types in declaration\n");
+        exit(EXIT_FAILURE);
+    }
 
     // Verifica che la variabile non esista già
     if (lookup(current_scope, id_node->val.s) != NULL) {
@@ -177,40 +163,16 @@ void handle_declaration(ast_type *node, Scope *current_scope) {
         exit(EXIT_FAILURE);
     }
 
-    // Gestione delle liste
-    if (var_type == _LIST_TYPE) {
-        int elem_type = type_node->child[0]->type; // Tipo degli elementi della lista
-	int capacity = type_node->child[1]->val.i; // Capacità specificata nella dichiarazione
-
-        list_t *list = create_list(elem_type, capacity);
-
-        value_t list_value;
-        list_value.type = _LIST_TYPE;
-        list_value.u.list = list;
-        ht_set(current_scope->symbolTable, id_node->val.s, list_value);
-
-    } else {
-        value_t expr_value = executor(expr_node, current_scope);
-
-        if ((var_type == _INT_TYPE && expr_value.type != 0) ||
-            (var_type == _DOUBLE_TYPE && expr_value.type != 1) ||
-            (var_type == _STRING_TYPE && expr_value.type != 2)) {
-            printf("Type error: mismatched types in declaration\n");
-            exit(EXIT_FAILURE);
-        }
-
-        if (expr_value.type == 2) {
-            expr_value.u.s = strdup(expr_value.u.s);
-            if (!expr_value.u.s) {
-                printf("Error: Memory allocation failed for string\n");
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        ht_set(current_scope->symbolTable, id_node->val.s, expr_value);
+    if (expr_value.type == 2) { // Tipo stringa
+	expr_value.u.s = strdup(expr_value.u.s);
+	if (!expr_value.u.s) { // Verifica l'allocazione
+        	printf("Error: Memory allocation failed for string\n");
+        	exit(EXIT_FAILURE);
+    	}
     }
-}
 
+    ht_set(current_scope->symbolTable, id_node->val.s, expr_value);
+}
 
 void handle_assignment(ast_type *node, Scope *current_scope) {
     char *var_name = node->child[0]->val.s;
@@ -401,5 +363,69 @@ int map_type(int declared_type) {
 }
 
 
+value_t handle_function_call(ast_type *func_call_node, Scope *current_scope, value_t result) {
+    char *func_name = func_call_node->child[0]->val.s; 
+    ast_type *arg_list = func_call_node->child[1];     
 
+    value_t *func_value = lookup_function(current_scope, func_name);
+    if (!func_value || func_value->type != 3) {
+        printf("Error: Function '%s' not found or not a valid function\n", func_name);
+        exit(EXIT_FAILURE);
+    }
+
+    function_t *func = (function_t *)func_value->u.ptr;
+
+    Scope *func_scope = enter_scope(current_scope);
+
+    ast_type *param_list = func->param_list;
+    while (param_list && arg_list) {
+        char *param_name = param_list->child[0]->val.s; 
+        printf("%s\n", param_name);
+	value_t arg_value = executor(arg_list->child[0], current_scope);
+        ht_set(func_scope->symbolTable, param_name, arg_value);
+
+        param_list = param_list->child[0]; 
+        arg_list = arg_list->child[0];    
+	
+    }	
+
+    result = executor(func->body, func_scope);
+
+    if (param_list || arg_list) {
+        printf("Error: Parameter and argument count mismatch in function '%s'\n", func_name);
+        exit(EXIT_FAILURE);
+    }
+
+    int expected_type = map_type(func->return_type); // Mappa il tipo dichiarato
+
+    if (expected_type == -1) {
+    printf("Error: Unsupported return type for function '%s'\n", func_name);
+    exit(EXIT_FAILURE);
+}
+
+if (expected_type != result.type) {
+    printf("Error: Function '%s' must return a value of type %d, but got %d\n", 
+           func_name, expected_type, result.type);
+    exit(EXIT_FAILURE);
+}
+
+    if (func->return_type != _VOID_TYPE && result.type == -1) {
+        printf("Error: Function '%s' must return a value, but no return statement was found\n", func_name);
+        exit(EXIT_FAILURE);
+    }
+    exit_scope(func_scope);
+
+    return result; 
+}
+
+
+value_t handle_arg_list(ast_type *arg_list, Scope *current_scope, value_t result) {
+
+    while (arg_list) {
+        result = executor(arg_list->child[0], current_scope);
+        arg_list = arg_list->child[1]; 
+    }
+
+    return result;
+}
 

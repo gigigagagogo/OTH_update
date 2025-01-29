@@ -1,0 +1,11 @@
+x$Dichiarazione di una lista di interi$x
+floaty[4] myList;
+
+join_in(myList, 2.2);
+myList[2] -> 3.4;
+join_in(myList, 2.1);
+go 
+	one_by_one( a in (0, size_up(myList), 1) ){
+		throw_up(myList[a] + ^\gms^);
+	}
+all_set;

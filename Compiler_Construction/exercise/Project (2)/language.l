@@ -19,19 +19,14 @@
 
 	// Funzione per aggiungere frammenti al buffer
 	void append_to_string(const char *fragment) {
-    		if (!current_string) {
-        		current_string = strdup(fragment);
-    		} else {
-        		size_t len = strlen(current_string) + strlen(fragment) + 1;
-        		current_string = realloc(current_string, len);
-        		if (!current_string) { // Controllo necessario
-            			printf("Error: Memory allocation failed in append_to_string\n");
-            			exit(EXIT_FAILURE);
-        		}
-        		strcat(current_string, fragment);
-    		}
+		if (!current_string) {
+			current_string = strdup(fragment);
+		} else {
+			size_t len = strlen(current_string) + strlen(fragment) + 1;
+			current_string = realloc(current_string, len);
+			strcat(current_string, fragment);
+		}
 	}
-
 	
 
 %}
@@ -60,8 +55,6 @@ OPERATOR [+-/!<>]
 "<="       			{ return T_LEQUAL; }
 "<"        			{ return T_LESS; }
 ">"        			{ return T_GREATER; }
-"&&"				{ return T_AND; }
-"||"				{ return T_OR; }
 "send_back"                     { return T_SENDBACK; }
 "in"				{ return T_IN; }
 "a_new_one"			{ return T_A_NEW_ONE; }
@@ -76,8 +69,6 @@ OPERATOR [+-/!<>]
 "chain"				{ return T_STRING_TYPE; }
 "rando"				{ return T_RANDO; }
 "gimme"				{ return T_GIMME; }
-"size_up"			{ return T_SIZE_UP; }
-"join_in"			{ return T_JOIN_IN; }
 "\n"				{  }
 " "				{  }
 "\t"				{  }
@@ -89,12 +80,8 @@ OPERATOR [+-/!<>]
 <STRING>"\\gms"                 { append_to_string("\n");}
 <STRING>"\\so"                  { append_to_string("\t"); }
 <STRING>"\^"                    { 
-					if (!current_string) {
-        					yylval.str = strdup(""); 
-    					} else {
-        					yylval.str = strdup(current_string);
-    					}
-					reset_string_buffer();
+					yylval.str= strdup(current_string);
+					current_string = NULL;
 					BEGIN(INITIAL);
 					return T_STRING;
 				}

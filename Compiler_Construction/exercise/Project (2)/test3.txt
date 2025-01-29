@@ -7,4 +7,4 @@ a_new_one whole_y test(whole_y a, whole_y b){
 
 whole_y c -> test(a,b);
 
-throw_up(c + ^\gms^);
+throw_up(a + ^\gms^);

@@ -1,56 +1,5 @@
 #include "types.h"
 
-void print_all_scopes(Scope *scope) {
-    int level = 0;
-    while (scope) {
-        printf("Scope Level %d:\n", level);
-        print_symbol_table(scope->symbolTable);
-        scope = scope->parent;
-        level++;
-    }
-}
-
-
-void print_symbol_table(ht_str *symbolTable) {
-    if (!symbolTable) {
-        printf("Symbol table is NULL\n");
-        return;
-    }
-
-    printf("\nSymbol Table:\n");
-    printf("===============================\n");
-
-    for (int i = 0; i < symbolTable->size; i++) {
-        Node *current = symbolTable->entries[i];
-        while (current) {
-            printf("Key: %s, Type: %d, Value: ", current->key, current->value.type);
-
-            switch (current->value.type) {
-                case _INT_TYPE:
-                    printf("%d\n", current->value.u.i);
-                    break;
-                case _DOUBLE_TYPE:
-                    printf("%f\n", current->value.u.d);
-                    break;
-                case _STRING_TYPE:
-                    printf("\"%s\"\n", current->value.u.s);
-                    break;
-                case _LIST_TYPE:
-                    printf("List (capacity: %d, size: %d)\n",
-                           current->value.u.list->capacity, current->value.u.list->size);
-                    break;
-                default:
-                    printf("Unknown or unsupported type\n");
-                    break;
-            }
-            current = current->next;
-        }
-    }
-
-    printf("===============================\n");
-}
-
-
 void free_ht (ht_str *hashtable) {
     if (hashtable == NULL) {
         return; 
@@ -138,7 +87,7 @@ value_t *search (ht_str *hashtable, const char *key){
 }
 
 Node *ht_pair(const char *key, const value_t value) {
-	Node *entry = malloc(sizeof(Node));
+	Node *entry = malloc(sizeof(entry));
 	entry->key = malloc(strlen(key) + 1);
 	entry->value =value;
 

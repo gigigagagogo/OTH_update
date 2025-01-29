@@ -6,28 +6,15 @@
 #include <string.h>
 #include <math.h>
 
-typedef struct list_t list_t;
-
 typedef struct {
     int type; 
     union {
         int i;        
         double d;    
         char *s;
-   	void *ptr;
-	list_t *list;	
+   	void *ptr;	
     } u;             
-    int size;
 } value_t;
-
-struct list_t{
-    int type;  // Tipo dei valori nella lista (es: _INT_TYPE, _DOUBLE_TYPE, ecc.)
-    value_t *elements; // Puntatore all'array di elementi
-    int size; // Numero di elementi nella lista
-    int capacity; // Capacità massima allocata
-};
-
-
 
 typedef struct ast {
         int type;
@@ -68,13 +55,14 @@ enum ast_types{
 
 	_INT = 100, _DOUBLE = 101, _STRING = 102,
 
-	_INT_TYPE = 200, _DOUBLE_TYPE = 201, _STRING_TYPE = 202, _VOID_TYPE = 203, _IDENTIFIER = 204, _LIST_TYPE = 205,
+	_INT_TYPE = 200, _DOUBLE_TYPE = 201, _STRING_TYPE = 202, _VOID_TYPE = 203, _IDENTIFIER = 204,
+
 	_IF = 300, _FOR = 301, _WHILE = 302, _RETURN = 303, _PRINT = 304,
 
-	_NEQUAL = 400, _GEQUAL = 401, _LEQUAL = 402, _EQUAL = 403, _PLUS = 404, _MINUS = 405, _MULTIPLY = 406, _DIVIDE = 407, _LESS = 408, _GREATER = 409, _FAI = 410, _AND = 411, _OR = 412,
+	_NEQUAL = 400, _GEQUAL = 401, _LEQUAL = 402, _EQUAL = 403, _PLUS = 404, _MINUS = 405, _MULTIPLY = 406, _DIVIDE = 407, _LESS = 408, _GREATER = 409, _FAI = 410,
 	
 	_STATEMENTS = 500, _NEWFUNC = 501, _CONTROLBLOCK = 503, _DECLARATION = 504, _ASSIGNMENT = 505, _FUNCALL = 508, _ARGLIST = 509, _PARAMLIST = 510, 
-	_OPTSTEP = 511, _PARENSTMT = 512, _EXPR = 513, _RANDO = 514, _GIMME = 515, _LIST_ACCESS =516, _LIST_ASSIGNMENT = 517, _SIZE_UP = 518, _JOIN_IN = 519
+	_OPTSTEP = 511, _PARENSTMT = 512, _EXPR = 513, _RANDO = 514, _GIMME = 515
 };
 
 
@@ -83,8 +71,6 @@ void print_ast(ast_type *node, int depth);
 value_t executor(ast_type *node, Scope *current_scope);
 
 //symbol_table file functions
-void print_all_scopes(Scope *scope);
-void print_symbol_table(ht_str *symbolTable);
 void free_ht (ht_str *hashtable);
 void resize_table (ht_str *hashtable);
 value_t *search (ht_str *hashtable, const char *key);

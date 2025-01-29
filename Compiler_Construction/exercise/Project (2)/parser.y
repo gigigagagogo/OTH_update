@@ -77,6 +77,7 @@ Scope *current_scope = NULL;
     ast_type *ast;
 }
 
+
 %token  <num>T_WHOLEY
 %token  <fnum>T_FLOATY
 %token  <id>T_IDENTIFIER
@@ -85,9 +86,10 @@ Scope *current_scope = NULL;
 %type <ast> expression statements statement types assignment declaration if_block while_block global_declaration function_def block control_blocks control_block for_block
 %type <ast> step arg_list param_list function_call START 
 %token <str>T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_IN T_LPAREN T_RPAREN T_LCURPAR T_RCURPAR T_A_NEW_ONE 
-T_ZIP_TYPE T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE T_EQUAL T_RANDO T_GIMME T_SIZE_UP T_JOIN_IN
-%right T_AND T_OR
-%left T_FAI T_EQUAL T_NEQUAL T_LESS T_GREATER T_LEQUAL T_GEQUAL T_COMMA T_MINUS T_PLUS T_MULTIPLY T_DIVIDE
+T_ZIP_TYPE T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE T_EQUAL T_RANDO T_GIMME
+%right T_FAI T_EQUAL T_NEQUAL T_LESS T_GREATER T_LEQUAL T_GEQUAL T_COMMA  
+%left T_MINUS T_PLUS
+%left T_MULTIPLY T_DIVIDE
 %start START
 %%
 
@@ -157,31 +159,25 @@ statement:
     | T_SENDBACK expression 	{ $$ = node1(_RETURN, $2); }    
     | T_THROWUP T_LPAREN expression T_RPAREN { $$ = node1(_PRINT, $3);  }
     | T_RANDO T_LPAREN expression T_COMMA expression T_RPAREN { $$ = node2(_RANDO, $3, $5); }
-    | T_GIMME T_LPAREN types T_RPAREN { $$ = node1(_GIMME, $3); }	
-    | T_JOIN_IN T_LPAREN T_IDENTIFIER T_COMMA expression T_RPAREN { $$ = node2(_JOIN_IN, node0(_IDENTIFIER), $5), $$->child[0]->val.s = $3; }
+    | T_GIMME T_LPAREN types T_RPAREN { $$ = node1(_GIMME, $3); }
     ;
 
 declaration:
-	   types T_IDENTIFIER	{ $$ = node2(_DECLARATION, $1, node0(_IDENTIFIER)); $$->child[1]->val.s = $2; }
-	   | types T_IDENTIFIER T_FAI expression  { $$ = node3(_DECLARATION, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; }
+	   types T_IDENTIFIER T_FAI expression  { $$ = node3(_DECLARATION, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; }
 	   | types T_IDENTIFIER T_FAI function_call { $$ = node3(_DECLARATION, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; } 
 	;
 
 assignment:
       T_IDENTIFIER T_FAI expression { $$ = node2(_ASSIGNMENT, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
       | T_IDENTIFIER T_FAI function_call  { $$ = node2(_ASSIGNMENT, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }    
-      | T_IDENTIFIER '[' expression ']' T_FAI expression { $$ = node3(_LIST_ASSIGNMENT, node0(_IDENTIFIER), $3, $6); $$->child[0]->val.s = $1; }
-      ;
+;
 
 types: 
       T_WHOLEY_TYPE	{ $$ = node0(_INT_TYPE); }
      | T_FLOATY_TYPE	{ $$ = node0(_DOUBLE_TYPE); }
      | T_STRING_TYPE 	{ $$ = node0(_STRING_TYPE); }
      | T_ZIP_TYPE	{ $$ = node0(_VOID_TYPE); }
-     | T_WHOLEY_TYPE '[' T_WHOLEY ']' { $$ = node2(_LIST_TYPE, node0(_INT_TYPE), node0(_INT)); $$->child[1]->val.i = $3; }
-     | T_FLOATY_TYPE '[' T_WHOLEY ']' { $$ = node2(_LIST_TYPE, node0(_DOUBLE_TYPE), node0(_INT)); $$->child[1]->val.i = $3; }
-     | T_STRING_TYPE '[' T_WHOLEY ']' { $$ = node2(_LIST_TYPE, node0(_STRING_TYPE), node0(_INT)); $$->child[1]->val.i = $3; }     
-;
+     ;
 
 expression:
       T_WHOLEY		{ $$ = node0(_INT); $$->val.i = $1;  }     
@@ -200,11 +196,7 @@ expression:
     | expression T_FAI expression { $$ = node2(_FAI, $1, $3); }
     | expression T_EQUAL expression { $$ = node2(_EQUAL, $1, $3); }
     | T_LPAREN expression T_RPAREN  { $$ = node1(_PARENSTMT, $2); }
-    | T_IDENTIFIER '[' expression ']' { $$ = node2(_LIST_ACCESS, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
-    | T_SIZE_UP T_LPAREN T_IDENTIFIER T_RPAREN { $$ = node1(_SIZE_UP, node0(_IDENTIFIER)); $$->child[0]->val.s = $3; }
-    | expression T_AND expression { $$ = node2(_AND, $1, $3); }
-    | expression T_OR expression { $$ = node2(_OR, $1, $3); }
-    ;
+;
 
 function_def:
 	T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR  
@@ -356,55 +348,6 @@ value_t executor(ast_type *node, Scope *current_scope) {
     		break;
 	}
 
-	case _AND: {
-    		value_t left = executor(node->child[0], current_scope);
-
-    		// Short-circuit: Se il primo operando è falso, restituisci subito falso
-    		if (left.type != 0) {
-        		printf("Error: Logical AND requires integer operands\n");
-        		exit(EXIT_FAILURE);
-    		}
-    		if (!left.u.i) {
-        		result.type = 0;
-        		result.u.i = 0;
-        		break;
-    		}
-
-    		value_t right = executor(node->child[1], current_scope);
-    		if (right.type != 0) {
-        		printf("Error: Logical AND requires integer operands\n");
-        		exit(EXIT_FAILURE);
-    		}
-
-    		result.type = 0;
-    		result.u.i = right.u.i;
-    		break;
-	}
-
-	case _OR: {
-    		value_t left = executor(node->child[0], current_scope);
-
-    		// Short-circuit: Se il primo operando è vero, restituisci subito vero
-    		if (left.type != 0) {
-			printf("Error: Logical OR requires integer operands\n");
-			exit(EXIT_FAILURE);
-		}
-	        if (left.u.i) {
-        		result.type = 0;
-        		result.u.i = 1;
-        		break;
-    		}
-
-    		value_t right = executor(node->child[1], current_scope);
-    		if (right.type != 0) {
-        		printf("Error: Logical OR requires integer operands\n");
-        		exit(EXIT_FAILURE);
-    		}
-
-    		result.type = 0;
-    		result.u.i = right.u.i;
-    		break;
-	}
 	case _PARENSTMT:
 		result = executor(node->child[0], current_scope);	
 		break;
@@ -452,7 +395,6 @@ value_t executor(ast_type *node, Scope *current_scope) {
 		result = executor(node->child[0], current_scope);
 		break;
 	}
-	/*
 	case _FUNCALL: {
 		//executor(t0);
 		result = handle_function_call(node, current_scope, result);
@@ -462,7 +404,6 @@ value_t executor(ast_type *node, Scope *current_scope) {
 		result = handle_arg_list(node, current_scope, result);
 		break; 
 	}
-	*/
 	case _RANDO: {
 		
 		int min = executor(node->child[0], current_scope).u.i;
@@ -502,126 +443,6 @@ value_t executor(ast_type *node, Scope *current_scope) {
     		}
     		break;
 	}
-
-	case _LIST_ACCESS: {
-    		char *list_name = node->child[0]->val.s;
-    		value_t *list_value = lookup(current_scope, list_name);
-
-    		if (!list_value || list_value->type != _LIST_TYPE) {
-        		printf("Error: '%s' is not a list\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		int index = executor(node->child[1], current_scope).u.i;
-
-    		if (index < 0 || index >= list_value->u.list->size) {
-        		printf("Error: Index out of bounds for list '%s'\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		result = list_value->u.list->elements[index];
-    		break;
-	}
-
-	case _LIST_ASSIGNMENT: {
-    		char *list_name = node->child[0]->val.s;
-    		value_t *list_value = lookup(current_scope, list_name);
-
-		//print_all_scopes(current_scope);
-
-    		if (!list_value || list_value->type != _LIST_TYPE) {
-        		printf("Error: '%s' is not a list\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		int index = executor(node->child[1], current_scope).u.i;
-
-    		if (index < 0 || index >= list_value->u.list->capacity) {
-        		printf("Error: Index %d out of bounds for list '%s'\n", index, list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		value_t new_value = executor(node->child[2], current_scope);
-    		if (new_value.type != map_type(list_value->u.list->type)) {
-        		printf("Error: Type mismatch in assignment to list '%s'\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-		if (new_value.type == 2) { // Tipo stringa
-    	    		new_value.u.s = strdup(new_value.u.s);
-		        if (!new_value.u.s) {
-            			printf("Error: Memory allocation failed for string\n");
-            			exit(EXIT_FAILURE);
-        		}
-    		}
-
-
-    		// Assegna il valore all'indice
-    		list_value->u.list->elements[index] = new_value;
-
-    		// Aggiorna la dimensione logica della lista se necessario
-    		if (index >= list_value->u.list->size) {
-        		list_value->u.list->size = index + 1;
-    		}
-		//print_all_scopes(current_scope);
-    		break;
-	}
-
-	case _SIZE_UP: {
-		char *list_name = node->child[0]->val.s;
-		
-		
-		//print_all_scopes(current_scope);		
-
-		value_t *list_value = lookup(current_scope, list_name);
-	
-    		if (!list_value || list_value->type != _LIST_TYPE) {
-        		printf("Error: '%s' is not a list\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		result.type = 0; 
-    		result.u.i = list_value->u.list->size;
-    		break;
-	}	
-
-	case _JOIN_IN: {
-    		char *list_name = node->child[0]->val.s;
-
-    		value_t *list_value = lookup(current_scope, list_name);
-    		if (!list_value || list_value->type != _LIST_TYPE) {
-        		printf("Error: '%s' is not a list\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		if (list_value->u.list->size >= list_value->u.list->capacity) {
-        		printf("Error: List '%s' is full\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		value_t new_value = executor(node->child[1], current_scope);
-
-    		if (new_value.type != map_type(list_value->u.list->type)) {
-        		printf("Error: Type mismatch in append to list '%s'\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-		if (new_value.type == 2) { // 2 rappresenta il tipo stringa
-     			new_value.u.s = strdup(new_value.u.s);
-        		if (!new_value.u.s) {
-            			printf("Error: Memory allocation failed for string append\n");
-            			exit(EXIT_FAILURE);
-        		}
-    		}
-
-    		list_value->u.list->elements[list_value->u.list->size] = new_value;
-
-    		list_value->u.list->size++;
-
-    		break;
-	}
-
-
 	default: {
 		printf("Error type %d\n", node->type);
 		exit(EXIT_FAILURE);

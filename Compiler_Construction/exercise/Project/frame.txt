@@ -1,0 +1,56 @@
+a_new_one zip drawFrame(sentence) {
+    whole_y maxLen -> 0;
+    whole_y size -> size_up(sentence);
+
+    go
+        one_by_one(i in (0, size, 1)) {
+            whole_y wordLen -> string_length(sentence[i]);
+            imagine(wordLen > maxLen) {
+                maxLen -> wordLen;
+            }
+        }
+    all_set;
+
+    whole_y frameWidth -> maxLen + 4;
+
+    // Stampa la riga superiore della cornice
+    whole_y j -> 0;
+    go
+        as_long_as(j < frameWidth) {
+            throw_up(^*^);
+            j -> j + 1;
+        }
+    all_set;
+    throw_up(^\gms^);
+
+    go
+        one_by_one(i in (0, size, 1)) {
+            throw_up(^* ^ + sentence[i] + ^ ^);
+            whole_y spaceCount -> maxLen - string_length(sentence[i]);
+            go
+                as_long_as(spaceCount > 0) {
+                    throw_up(^ ^);
+                    spaceCount -> spaceCount - 1;
+                }
+            all_set;
+            throw_up(^ *^\gms^);
+        }
+    all_set;
+
+    j -> 0;
+    go
+        as_long_as(j < frameWidth) {
+            throw_up(^*^);
+            j -> j + 1;
+        }
+    all_set;
+    throw_up(^\gms^);
+}
+
+a_new_one whole_y main() {
+    throw_up(^Please enter a sentence: \gms^);
+    chain[] sentence -> gimme(chain[]);
+
+    drawFrame(sentence);
+}
+

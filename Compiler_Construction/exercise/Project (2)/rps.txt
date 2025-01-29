@@ -1,0 +1,54 @@
+whole_y cpuWin -> 0;
+whole_y userWin -> 0;
+
+a_new_one zip menu(){
+	throw_up(^+++++++++++++++++^);
+	throw_up(^1.Play!^);
+	throw_up(^0.Exit!^);
+	throw_up(^+++++++++++++++++^);
+}
+
+a_new_one zip menuChoise(){
+	throw_up(^+++++++++++++++++^);
+	throw_up(^1. Rock^);
+	throw_up(^2. Paper^);
+	throw_up(^3. Scissors^);
+	throw_up(^+++++++++++++++++^);
+}
+
+a_new_one whole_y choise(){
+	
+	throw_up(^Choose an option: \gms^);
+	whole_y ch -> gimme(whole_y);
+	go
+		as_long_as(ch<1){
+			throw_up(^Choise not valid. Retry!\gms^);
+			throw_up(^Choose an option: \gms^);
+			ch -> gimme(whole_y);
+		}
+	all_set;
+	send_back(ch);
+}
+
+a_new_one zip checkWin(userChoise, cpuChoise){
+	go
+}
+
+a_new_one whole_y main(){
+
+	menu()	
+	whole_y play -> gimme(whole_y);
+	go
+		imagine(play --> 1){
+			whole_y finish -> 1;
+			go
+				as_long_as(finish !-> 0){
+					menuChoise();
+					whole_y userChoise -> gimme(whole_y);
+					whole_y cpuChose -> rando(1,3);
+				}				
+		}
+			
+}
+
+
