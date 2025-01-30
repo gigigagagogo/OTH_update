@@ -20,6 +20,11 @@ typedef struct {
     int size;
 } value_t;
 
+typedef struct stackNode{
+	value_t val;
+	struct stackNode *next;
+}node_s;
+
 struct list_t{
     int type;  // Tipo dei valori nella lista (es: _INT_TYPE, _DOUBLE_TYPE, ecc.)
     value_t *elements; // Puntatore all'array di elementi
@@ -73,8 +78,9 @@ enum ast_types{
 
 	_NEQUAL = 400, _GEQUAL = 401, _LEQUAL = 402, _EQUAL = 403, _PLUS = 404, _MINUS = 405, _MULTIPLY = 406, _DIVIDE = 407, _LESS = 408, _GREATER = 409, _FAI = 410, _AND = 411, _OR = 412,
 	
-	_STATEMENTS = 500, _NEWFUNC = 501, _CONTROLBLOCK = 503, _DECLARATION = 504, _ASSIGNMENT = 505, _FUNCALL = 508, _ARGLIST = 509, _PARAMLIST = 510, 
-	_OPTSTEP = 511, _PARENSTMT = 512, _EXPR = 513, _RANDO = 514, _GIMME = 515, _LIST_ACCESS =516, _LIST_ASSIGNMENT = 517, _SIZE_UP = 518, _JOIN_IN = 519
+	_STATEMENTS = 500, _NEWFUNC = 501, _CONTROLBLOCK = 503, _DECLARATION = 504, _ASSIGNMENT = 505, _FUNCALL = 508, _ARGLIST = 509,_ARGSLIST = 510, 
+	_OPTSTEP = 511, _PARENSTMT = 512, _EXPR = 513, _RANDO = 514, _GIMME = 515, _LIST_ACCESS =516, _LIST_ASSIGNMENT = 517, _SIZE_UP = 518, _JOIN_IN = 519, _PARAMLIST = 520, 
+	_PARAMSLIST = 521
 };
 
 
@@ -98,4 +104,10 @@ Scope *enter_scope (Scope *current_scope);
 Scope *exit_scope (Scope *current_scope);
 value_t *lookup (Scope *current_scope, const char *key);
 value_t *lookup_function(Scope *current_scope, const char *func_name);
+
+//stack functions
+void s_push(node_s **head, value_t data);
+value_t s_pop(node_s **head);
+int s_empty(node_s **head);
+
 #endif // TYPES_H

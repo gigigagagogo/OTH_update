@@ -4,7 +4,7 @@ TARGET = my_language
 # File sorgenti
 LEX_FILE = language.l
 YACC_FILE = parser.y
-SOURCE_FILES = scope.c symbol_table.c exec_fun.c
+SOURCE_FILES = scope.c symbol_table.c exec_fun.c stack.c
 
 # File generati da Flex e Bison
 LEX_C = lex.yy.c

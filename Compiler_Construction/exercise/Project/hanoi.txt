@@ -3,10 +3,10 @@ whole_y n -> 3;
 a_new_one zip hanoi(whole_y n, chain origin, chain destination, chain temp){
 	go
 		imagine (n-->1){
-			throw_up(^Sposta il disco da ^ + origin + ^ a ^ + destination);
+			throw_up(^Sposta il disco 1 da ^ + origin + ^ a ^ + destination + ^\gms^);
 		}nah{
 			hanoi(n-1, origin, temp, destination);
-			throw_up(^Sposta il disco da ^ + origin + ^ a ^ + destination);
+			throw_up(^Sposta il disco ^ + n + ^ da ^ + origin + ^ a ^ + destination + ^\gms^);
 			hanoi(n-1, temp, destination, origin);
 		}
 	all_set;

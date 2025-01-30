@@ -15,7 +15,7 @@
     int var_set(char *id, int val);
     ast_type *root = NULL; 
     extern FILE *yyin;
-    
+    node_s *head = NULL;
 
 ast_type *node0(int type){
  	ast_type *t = calloc(1, sizeof(ast_type)); 
@@ -61,7 +61,7 @@ ast_type *node4(int type, ast_type *child0, ast_type *child1, ast_type *child2, 
         return t;
 }
 
-Scope *current_scope = NULL;
+Scope *global_scope = NULL;
 
 %}
 
@@ -86,13 +86,18 @@ Scope *current_scope = NULL;
 %type <ast> step arg_list param_list function_call START 
 %token <str>T_SENDBACK T_THROWUP T_GO T_ALL_SET T_IMAGINE T_NAH T_ONE_BY_ONE T_AS_LONG_AS T_IN T_LPAREN T_RPAREN T_LCURPAR T_RCURPAR T_A_NEW_ONE 
 T_ZIP_TYPE T_COMMA T_WHOLEY_TYPE T_FLOATY_TYPE T_STRING_TYPE T_EQUAL T_RANDO T_GIMME T_SIZE_UP T_JOIN_IN
-%right T_AND T_OR
-%left T_FAI T_EQUAL T_NEQUAL T_LESS T_GREATER T_LEQUAL T_GEQUAL T_COMMA T_MINUS T_PLUS T_MULTIPLY T_DIVIDE
-%start START
+
+%right T_FAI T_EQUAL T_NEQUAL T_LESS T_GREATER T_GEQUAL T_LEQUAL T_COMMA
+%left T_OR
+%left T_AND
+%left T_MINUS T_PLUS
+%left T_MULTIPLY T_DIVIDE
+%left T_LPAREN '['
+
 %%
 
 START:
-     global_declaration { root = node1(_START, $1); current_scope = enter_scope(current_scope); }
+     global_declaration { root = node1(_START, $1); }
     | START global_declaration { root = node2(_START, root, $2); }
 ;
 
@@ -151,25 +156,20 @@ statements:
 
 statement:
     declaration { $$ = $1; } 
+    | expression { $$ = $1; }
     | assignment { $$ = $1; }
-    | function_call { $$ = $1; } 
     | block	{ $$ = $1; } 
     | T_SENDBACK expression 	{ $$ = node1(_RETURN, $2); }    
     | T_THROWUP T_LPAREN expression T_RPAREN { $$ = node1(_PRINT, $3);  }
-    | T_RANDO T_LPAREN expression T_COMMA expression T_RPAREN { $$ = node2(_RANDO, $3, $5); }
-    | T_GIMME T_LPAREN types T_RPAREN { $$ = node1(_GIMME, $3); }	
-    | T_JOIN_IN T_LPAREN T_IDENTIFIER T_COMMA expression T_RPAREN { $$ = node2(_JOIN_IN, node0(_IDENTIFIER), $5), $$->child[0]->val.s = $3; }
     ;
 
 declaration:
 	   types T_IDENTIFIER	{ $$ = node2(_DECLARATION, $1, node0(_IDENTIFIER)); $$->child[1]->val.s = $2; }
 	   | types T_IDENTIFIER T_FAI expression  { $$ = node3(_DECLARATION, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; }
-	   | types T_IDENTIFIER T_FAI function_call { $$ = node3(_DECLARATION, $1, node0(_IDENTIFIER), $4); $$->child[1]->val.s = $2; } 
 	;
 
 assignment:
       T_IDENTIFIER T_FAI expression { $$ = node2(_ASSIGNMENT, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
-      | T_IDENTIFIER T_FAI function_call  { $$ = node2(_ASSIGNMENT, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }    
       | T_IDENTIFIER '[' expression ']' T_FAI expression { $$ = node3(_LIST_ASSIGNMENT, node0(_IDENTIFIER), $3, $6); $$->child[0]->val.s = $1; }
       ;
 
@@ -188,6 +188,7 @@ expression:
     | T_FLOATY 		{ $$ = node0(_DOUBLE); $$->val.d = $1; }				
     | T_STRING		{ $$ = node0(_STRING); $$->val.s = $1; }				
     | T_IDENTIFIER	{ $$ = node0(_IDENTIFIER); $$->val.s = $1; } 
+    | function_call { $$ = $1; }
     | expression T_NEQUAL expression { $$ = node2(_NEQUAL, $1, $3);  }
     | expression T_GEQUAL expression { $$ = node2(_GEQUAL, $1, $3);  }
     | expression T_LEQUAL expression { $$ = node2(_LEQUAL, $1, $3);  }
@@ -203,8 +204,11 @@ expression:
     | T_IDENTIFIER '[' expression ']' { $$ = node2(_LIST_ACCESS, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
     | T_SIZE_UP T_LPAREN T_IDENTIFIER T_RPAREN { $$ = node1(_SIZE_UP, node0(_IDENTIFIER)); $$->child[0]->val.s = $3; }
     | expression T_AND expression { $$ = node2(_AND, $1, $3); }
-    | expression T_OR expression { $$ = node2(_OR, $1, $3); }
-    ;
+    | expression T_OR expression { $$ = node2(_OR, $1, $3); }	    
+    | T_GIMME T_LPAREN types T_RPAREN { $$ = node1(_GIMME, $3); }		    
+    | T_RANDO T_LPAREN expression T_COMMA expression T_RPAREN { $$ = node2(_RANDO, $3, $5); }
+    | T_JOIN_IN T_LPAREN T_IDENTIFIER T_COMMA expression T_RPAREN { $$ = node2(_JOIN_IN, node0(_IDENTIFIER), $5), $$->child[0]->val.s = $3; }
+;
 
 function_def:
 	T_A_NEW_ONE types T_IDENTIFIER T_LPAREN param_list T_RPAREN T_LCURPAR statements T_RCURPAR  
@@ -217,13 +221,13 @@ function_call:
 	     T_IDENTIFIER T_LPAREN arg_list T_RPAREN	{ $$ = node2(_FUNCALL, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
 	;
 param_list:
-	  types T_IDENTIFIER	{ $$ = node2(_PARAMLIST, $1, node0(_IDENTIFIER)); $$->child[1]->val.s = $2; }
-	  | param_list T_COMMA types T_IDENTIFIER	{ $$ = node3(_PARAMLIST, $1, $3, node0(_IDENTIFIER)); $$->child[2]->val.s = $4; }
+	  types T_IDENTIFIER	{ $$ = node3(_PARAMSLIST, NULL, $1, node0(_IDENTIFIER)); $$->child[2]->val.s = $2; }
+	  | param_list T_COMMA types T_IDENTIFIER	{ $$ = node3(_PARAMSLIST, $1, $3, node0(_IDENTIFIER)); $$->child[2]->val.s = $4; }
 	  | %empty { $$ = NULL; }
 	;
 arg_list:
-	expression	{ $$ = node1(_ARGLIST, $1); }
-	| arg_list T_COMMA expression { $$ = node2(_ARGLIST, $1, $3); }
+	expression	{ $$ = node2(_ARGSLIST, NULL, $1); }
+	| arg_list T_COMMA expression { $$ = node2(_ARGSLIST, $1, $3); }
 	| %empty	{ $$ = NULL; }
 	;
 %%
@@ -253,7 +257,7 @@ void print_ast(ast_type *node, int depth) {
         printf(": %s", node->val.s);
     }
 
-    printf("\n");
+   printf("\n");
 
     // Stampa i figli ricorsivamente
     for (int i = 0; i < MAX_CHILD; i++) { // Supponendo massimo 3 figli
@@ -358,8 +362,6 @@ value_t executor(ast_type *node, Scope *current_scope) {
 
 	case _AND: {
     		value_t left = executor(node->child[0], current_scope);
-
-    		// Short-circuit: Se il primo operando è falso, restituisci subito falso
     		if (left.type != 0) {
         		printf("Error: Logical AND requires integer operands\n");
         		exit(EXIT_FAILURE);
@@ -384,7 +386,6 @@ value_t executor(ast_type *node, Scope *current_scope) {
 	case _OR: {
     		value_t left = executor(node->child[0], current_scope);
 
-    		// Short-circuit: Se il primo operando è vero, restituisci subito vero
     		if (left.type != 0) {
 			printf("Error: Logical OR requires integer operands\n");
 			exit(EXIT_FAILURE);
@@ -443,26 +444,29 @@ value_t executor(ast_type *node, Scope *current_scope) {
 	case _NEWFUNC: {		
 		handle_new_function(node, current_scope);
 		break;
-	}	
-	case _PARAMLIST: {
-		handle_param_list(node, current_scope);
+	}
+	
+	case _PARAMSLIST: {
+		ht_set(current_scope->symbolTable, node->child[2]->val.s, s_pop(&head));	
+		executor(node->child[0], current_scope);
 		break;
 	}
 	case _RETURN: {
 		result = executor(node->child[0], current_scope);
 		break;
 	}
-	/*
+	
 	case _FUNCALL: {
-		//executor(t0);
-		result = handle_function_call(node, current_scope, result);
+ 		result = handle_function_call(node, current_scope);
 		break;
 	}
-	case _ARGLIST: {
-		result = handle_arg_list(node, current_scope, result);
-		break; 
+
+	case _ARGSLIST: {
+		executor(node->child[0], current_scope);
+		result = executor(node->child[1], current_scope);
+		s_push(&head, result);
+		break;	
 	}
-	*/
 	case _RANDO: {
 		
 		int min = executor(node->child[0], current_scope).u.i;
@@ -644,18 +648,20 @@ int main(int argc, char **argv) {
     }
 
     yyin = file;
-    printf("Inizio parsing del file: %s\n", argv[1]);
+    printf("Start parsing file: %s\n", argv[1]);
 
     yyparse();
     
     if (root) {
-        printf("AST completo:\n");
+        printf("AST:\n");
         print_ast(root, 0);
 
-        printf("\nEsecuzione dell'AST:\n");
-        executor(root, current_scope);
+        printf("\nExecution of AST:\n");
+        
+	global_scope = enter_scope(NULL);
+	executor(root, global_scope);
 
-        current_scope = exit_scope(current_scope);
+        global_scope = exit_scope(global_scope);
      
     }
 

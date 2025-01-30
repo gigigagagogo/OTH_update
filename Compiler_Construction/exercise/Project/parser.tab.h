@@ -90,10 +90,10 @@ extern int yydebug;
     T_GIMME = 291,                 /* T_GIMME  */
     T_SIZE_UP = 292,               /* T_SIZE_UP  */
     T_JOIN_IN = 293,               /* T_JOIN_IN  */
-    T_AND = 294,                   /* T_AND  */
-    T_OR = 295,                    /* T_OR  */
-    T_FAI = 296,                   /* T_FAI  */
-    T_NEQUAL = 297                 /* T_NEQUAL  */
+    T_FAI = 294,                   /* T_FAI  */
+    T_NEQUAL = 295,                /* T_NEQUAL  */
+    T_OR = 296,                    /* T_OR  */
+    T_AND = 297                    /* T_AND  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

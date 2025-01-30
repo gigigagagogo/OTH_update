@@ -344,10 +344,11 @@ void handle_for(ast_type *node, Scope *current_scope) {
     }
     current_scope = exit_scope(loop_scope);
 }
+
 void handle_new_function(ast_type *node, Scope *current_scope) {
     char *func_name = node->child[1]->val.s;
 
-    if (lookup(current_scope, func_name)) {
+    if (lookup_function(current_scope, func_name)) {
         printf("Error: Function '%s' already declared in this scope.\n", func_name);
         exit(EXIT_FAILURE);
     }
@@ -368,24 +369,24 @@ void handle_new_function(ast_type *node, Scope *current_scope) {
 
     ht_set(current_scope->functionTable, func_name, func_val);
 }
-void handle_param_list(ast_type *param_list, Scope *current_scope) {
-    while (param_list != NULL) {
-        char *param_name = param_list->child[1]->val.s;
-        int param_type = param_list->child[0]->type;    
 
-        if (lookup(current_scope, param_name)) {
-            printf("Error: Parameter '%s' already declared in this scope.\n", param_name);
-            exit(EXIT_FAILURE);
-        }
+value_t handle_function_call(ast_type *node, Scope *current_scope) {
+    executor(node->child[1], current_scope); 
+    char *func_name = node->child[0]->val.s;
+    value_t *fun = lookup_function(current_scope, func_name);          
 
-        value_t param_val;
-        param_val.type = param_type;
+    if (fun->type != 3) {
+        printf("Error: Function %s not found!\n", func_name);
+    	exit(EXIT_FAILURE);
+    } 
 
-        ht_set(current_scope->symbolTable, param_name, param_val);
+    function_t *f = (function_t *) fun->u.ptr;                                     
+    Scope *func_scope = enter_scope(current_scope); 
 
-        param_list = param_list->child[0]; 
-    }
+    executor(f->param_list, func_scope);      
+    return executor(f->body, func_scope); 
 }
+
 
 int map_type(int declared_type) {
     switch (declared_type) {

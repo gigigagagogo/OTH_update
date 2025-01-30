@@ -2,18 +2,18 @@ whole_y cpuWin -> 0;
 whole_y userWin -> 0;
 
 a_new_one zip menu(){
-	throw_up(^+++++++++++++++++^);
-	throw_up(^1.Play!^);
-	throw_up(^0.Exit!^);
-	throw_up(^+++++++++++++++++^);
+	throw_up(^+++++++++++++++++\gms^);
+	throw_up(^1.Play!\gms^);
+	throw_up(^0.Exit!\gms^);
+	throw_up(^+++++++++++++++++\gms^);
 }
 
 a_new_one zip menuChoise(){
-	throw_up(^+++++++++++++++++^);
-	throw_up(^1. Rock^);
-	throw_up(^2. Paper^);
-	throw_up(^3. Scissors^);
-	throw_up(^+++++++++++++++++^);
+	throw_up(^+++++++++++++++++\gms^);
+	throw_up(^1. Rock\gms^);
+	throw_up(^2. Paper\gms^);
+	throw_up(^3. Scissors\gms^);
+	throw_up(^+++++++++++++++++\gms^);
 }
 
 a_new_one whole_y choise(){
@@ -30,25 +30,27 @@ a_new_one whole_y choise(){
 	send_back(ch);
 }
 
-a_new_one zip checkWin(userChoise, cpuChoise){
+a_new_one zip checkWin(whole_y userChoise, whole_y cpuChoise){
 
 	go
-        imagine (userChoise --> 1 && cpuChoise --> 3 || 
-                 userChoise --> 2 && cpuChoise --> 1 || 
-                 userChoise --> 3 && cpuChoise --> 2) {
+        imagine (((userChoise --> 1) && (cpuChoise --> 3)) || 
+                 ((userChoise --> 2) && (cpuChoise --> 1)) || 
+                 ((userChoise --> 3) && (cpuChoise --> 2))) {
             throw_up(^You win!\gms^);
             userWin -> userWin + 1;
         }
         nah {
-            imagine (cpuChoise --> 1 && userChoise --> 3 || 
-                     cpuChoise --> 2 && userChoise --> 1 || 
-                     cpuChoise --> 3 && userChoise --> 2) {
+	    go
+            imagine (((cpuChoise --> 1) && (userChoise --> 3)) || 
+                     ((cpuChoise --> 2) && (userChoise --> 1)) || 
+                     ((cpuChoise --> 3) && (userChoise --> 2))) {
                 throw_up(^CPU wins!\gms^);
                 cpuWin -> cpuWin + 1;
             }
             nah {
                 throw_up(^It's a draw!\gms^);
             }
+	    all_set;
         }
     all_set;
 
@@ -56,24 +58,24 @@ a_new_one zip checkWin(userChoise, cpuChoise){
 
 a_new_one zip main(){
 
-	menu()	
+	menu();	
 	whole_y play -> gimme(whole_y);
+	whole_y finish -> 1;
 	go
-    		as_long_as(play < 0 || play > 1) {
-        	throw_up(^Choice not valid. Retry!\gms^);
-        	menu();
-        	play -> gimme(whole_y);
-    	}
+    		as_long_as((play < 0) || (play > 1)) {
+        		throw_up(^Choice not valid. Retry!\gms^);
+        		menu();
+        		play -> gimme(whole_y);
+    		}
 	all_set;
 	go
 		imagine(play --> 1){
-			whole_y finish -> 1;
 			go
 				as_long_as(finish !-> 0){
 					menuChoise();
                     			whole_y userChoise -> choise();
-                    			whole_y cpuChoise -> rando(1, 3);
-					trow_up(userWin + ^ - ^ + cpuWin);
+					whole_y cpuChoise -> rando(1, 3);
+					throw_up(userWin + ^ - ^ + cpuWin + ^\gms^);
                     			throw_up(^Your choice: \gms^);
                     			throw_up(userChoise + ^\gms^);
                     			throw_up(^CPU choice: \gms^);

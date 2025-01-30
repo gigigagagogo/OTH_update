@@ -1,6 +1,0 @@
-whole_y a -> 5;
-a_new_one zip test(whole_y a){
-	throw_up(^test\gms^);
-}
-
-test(a);
