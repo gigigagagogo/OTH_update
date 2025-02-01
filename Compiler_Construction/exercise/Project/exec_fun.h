@@ -16,4 +16,5 @@ void handle_for(ast_type *node, Scope *current_scope);
 void handle_new_function(ast_type *node, Scope *current_scope);
 value_t handle_function_call(ast_type *node, Scope *current_scope);
 int map_type(int declared_type);
+value_t handle_index_access(ast_type *node, Scope *current_scope, value_t result); 
 #endif //EXEC_FUN_H

@@ -430,3 +430,51 @@ int map_type(int declared_type) {
             return -1;     // Tipo non supportato
     }
 }
+
+value_t handle_index_access(ast_type *node, Scope *current_scope, value_t result) {
+
+    // Nome della variabile
+    char *var_name = node->child[0]->val.s;
+    // Cerca la variabile nel simbolo corrente
+    value_t *var_value = lookup(current_scope, var_name);
+
+    // Controllo se la variabile esiste
+    if (!var_value) {
+        printf("Error: Variable '%s' not declared\n", var_name);
+        exit(EXIT_FAILURE);
+    }
+
+    // Ottieni l'indice
+    int index = executor(node->child[1], current_scope).u.i;
+
+    // Gestione per liste
+    if (var_value->type == _LIST_TYPE) {
+        if (index < 0 || index >= var_value->u.list->size) {
+            printf("Error: Index out of bounds for list '%s'\n", var_name);
+            exit(EXIT_FAILURE);
+        }
+        result = var_value->u.list->elements[index]; // Accedi all'elemento della lista
+
+    // Gestione per stringhe
+    } else if (var_value->type == 2) { // Tipo 2 rappresenta le stringhe
+        if (index < 0 || index >= strlen(var_value->u.s)) {
+            printf("Error: Index out of bounds for string '%s'\n", var_name);
+            exit(EXIT_FAILURE);
+        }
+        result.type = 2; // Tipo stringa
+        result.u.s = malloc(2); // Un carattere + terminatore
+        if (!result.u.s) {
+            printf("Error: Memory allocation failed\n");
+            exit(EXIT_FAILURE);
+        }
+        result.u.s[0] = var_value->u.s[index];
+        result.u.s[1] = '\0'; // Terminatore
+
+    } else {
+        printf("Error: Variable '%s' is neither a list nor a string\n", var_name);
+        exit(EXIT_FAILURE);
+    }
+
+    return result;
+}
+

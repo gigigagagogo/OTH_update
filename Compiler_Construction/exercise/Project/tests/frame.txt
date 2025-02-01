@@ -1,3 +1,5 @@
+chain[100] words;
+
 x$ Funzione per estrarre una sottostringa da una stringa $x
 a_new_one chain sub(chain str, whole_y start, whole_y length) {
     x$ Controllo dei parametri e della validità della sottostringa $x
@@ -20,7 +22,7 @@ a_new_one chain sub(chain str, whole_y start, whole_y length) {
 }
 
 x$ Funzione per dividere una stringa in parole $x
-a_new_one whole_y split(chain sentence, chain[100] words) {
+a_new_one whole_y split(chain sentence) {
     whole_y num_words -> 0;
     whole_y start -> 0;
     whole_y end -> 0;
@@ -55,23 +57,21 @@ a_new_one zip frame() {
     throw_up(^Please enter sentence: \gms^);
     chain sentence -> gimme(chain);
     whole_y number_words -> 0;
-    chain[100] words;
 
     x$ Suddivisione della stringa in parole $x
-    number_words -> split(sentence, words);
-
+    number_words -> split(sentence);
     whole_y max_len -> 0;
-
     x$ Calcolo della lunghezza massima delle parole $x
     go 
-        one_by_one (i in (0, number_words, 1)) {
-            go imagine(size_up(words[i]) > max_len) {
-                max_len -> size_up(words[i]);
+        one_by_one (i in (0, number_words, 1)) {	
+            throw_up(i + ^\gms^); 
+            go 
+		imagine((size_up(words[i])) > max_len) {
+ 			max_len -> size_up(words[i]);
             }
             all_set;
         }
     all_set;
-
     x$ Stampa del bordo superiore del frame $x
     go 
         one_by_one (j in (0, max_len + 4, 1)) {
