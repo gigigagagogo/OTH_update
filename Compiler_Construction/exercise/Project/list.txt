@@ -1,11 +1,12 @@
-x$Dichiarazione di una lista di interi$x
-floaty[4] myList;
+a_new_one zip test(chain[10] a){
+	a[1] -> ^prova^;
+}
 
-join_in(myList, 2.2);
-myList[2] -> 3.4;
-join_in(myList, 2.1);
-go 
-	one_by_one( a in (0, size_up(myList), 1) ){
-		throw_up(myList[a] + ^\gms^);
-	}
-all_set;
+a_new_one zip main(){
+	chain[10] a;
+	test(a);
+	throw_up(a[1]);
+}
+
+main();
+

@@ -8,6 +8,8 @@ Scope *enter_scope (Scope *current_scope){
 	new_scope->symbolTable = create_ht(10);
 	new_scope->functionTable = create_ht(10);
 	new_scope->parent = current_scope;
+	memset(&new_scope->return_val, 0, sizeof(value_t));
+	new_scope->isReturn = 0;
 	return new_scope;
 }
 

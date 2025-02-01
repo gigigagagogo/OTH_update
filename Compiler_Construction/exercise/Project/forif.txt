@@ -1,0 +1,9 @@
+go
+one_by_one(i in (1,5,1)){
+	go
+		imagine(i>2){
+			throw_up(^prova^);
+		}
+	all_set;
+}
+all_set;

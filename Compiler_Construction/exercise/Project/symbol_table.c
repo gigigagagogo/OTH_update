@@ -26,13 +26,13 @@ void print_symbol_table(ht_str *symbolTable) {
             printf("Key: %s, Type: %d, Value: ", current->key, current->value.type);
 
             switch (current->value.type) {
-                case _INT_TYPE:
+                case 0:
                     printf("%d\n", current->value.u.i);
                     break;
-                case _DOUBLE_TYPE:
+                case 1:
                     printf("%f\n", current->value.u.d);
                     break;
-                case _STRING_TYPE:
+                case 2:
                     printf("\"%s\"\n", current->value.u.s);
                     break;
                 case _LIST_TYPE:

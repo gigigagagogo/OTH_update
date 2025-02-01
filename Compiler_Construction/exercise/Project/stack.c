@@ -8,7 +8,7 @@ void s_push(node_s **head, value_t data){
 	
 	if(newNode == NULL){
 		printf("Error with memory allocation!\n");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 	if(data.type == 2){
 		newNode->val.type = 2;

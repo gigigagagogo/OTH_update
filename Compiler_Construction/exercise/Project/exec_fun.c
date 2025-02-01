@@ -195,12 +195,12 @@ void handle_declaration(ast_type *node, Scope *current_scope) {
         if ((var_type == _INT_TYPE && expr_value.type != 0) ||
             (var_type == _DOUBLE_TYPE && expr_value.type != 1) ||
             (var_type == _STRING_TYPE && expr_value.type != 2)) {
-            printf("Type error: mismatched types in declaration\n");
+            printf("Type error: mismatched types in declaration for variable %s\n", id_node->val.s );
             exit(EXIT_FAILURE);
         }
 
         if (expr_value.type == 2) {
-            expr_value.u.s = strdup(expr_value.u.s);
+	    expr_value.u.s = strdup(expr_value.u.s);
             if (!expr_value.u.s) {
                 printf("Error: Memory allocation failed for string\n");
                 exit(EXIT_FAILURE);
@@ -252,29 +252,58 @@ value_t handle_identifier(ast_type *node, Scope *current_scope) {
 }
 
 value_t compare_values(value_t left, value_t right, int operator_type, value_t result) {
-    result.type = 0; 
+    result.type = 0; // Risultato sarà sempre un intero (vero/falso)
 
-    if ((left.type != 0 && left.type != 1) || (right.type != 0 && right.type != 1)) {
-        printf("Error: Both operands must be numbers (int or double)\n");
-        exit(EXIT_FAILURE);
+    // Se entrambi sono stringhe, gestisci i confronti stringa
+    if (left.type == 2 && right.type == 2) { // 2 rappresenta il tipo stringa
+        switch (operator_type) {
+            case 0: // Maggiore
+                result.u.i = strcmp(left.u.s, right.u.s) > 0;
+                break;
+            case 1: // Minore
+                result.u.i = strcmp(left.u.s, right.u.s) < 0;
+                break;
+            case 2: // Maggiore o uguale
+                result.u.i = strcmp(left.u.s, right.u.s) >= 0;
+                break;
+            case 3: // Minore o uguale
+                result.u.i = strcmp(left.u.s, right.u.s) <= 0;
+                break;
+            case 4: // Uguale
+                result.u.i = strcmp(left.u.s, right.u.s) == 0;
+                break;
+            case 5: // Diverso
+                result.u.i = strcmp(left.u.s, right.u.s) != 0;
+                break;
+            default:
+                printf("Error: Invalid comparison operator for strings\n");
+                exit(EXIT_FAILURE);
+        }
+        return result; // Ritorna immediatamente, confronto stringa gestito
     }
 
-    double left_val = (left.type == 0) ? (double)left.u.i : left.u.d;
-    double right_val = (right.type == 0) ? (double)right.u.i : right.u.d;
+    // Se entrambi sono numeri (interi o double)
+    if ((left.type == 0 || left.type == 1) && (right.type == 0 || right.type == 1)) {
+        double left_val = (left.type == 0) ? (double)left.u.i : left.u.d;
+        double right_val = (right.type == 0) ? (double)right.u.i : right.u.d;
 
-    switch (operator_type) {
-        case 0: result.u.i = left_val > right_val; break;  // Maggiore
-        case 1: result.u.i = left_val < right_val; break;  // Minore
-        case 2: result.u.i = left_val >= right_val; break; // Maggiore o uguale
-        case 3: result.u.i = left_val <= right_val; break; // Minore o uguale
-        case 4: result.u.i = left_val == right_val; break; // Uguale
-        case 5: result.u.i = left_val != right_val; break; // Diverso
-        default:
-            printf("Error: Invalid comparison operator\n");
-            exit(EXIT_FAILURE);
+        switch (operator_type) {
+            case 0: result.u.i = left_val > right_val; break;  // Maggiore
+            case 1: result.u.i = left_val < right_val; break;  // Minore
+            case 2: result.u.i = left_val >= right_val; break; // Maggiore o uguale
+            case 3: result.u.i = left_val <= right_val; break; // Minore o uguale
+            case 4: result.u.i = left_val == right_val; break; // Uguale
+            case 5: result.u.i = left_val != right_val; break; // Diverso
+            default:
+                printf("Error: Invalid comparison operator for numbers\n");
+                exit(EXIT_FAILURE);
+        }
+        return result; // Ritorna immediatamente, confronto numerico gestito
     }
 
-    return result;
+    // Se tipi misti (esempio: numero e stringa), errore
+    printf("Error: Unsupported types for comparison (left type: %d, right type: %d)\n", left.type, right.type);
+    exit(EXIT_FAILURE);
 }
 
 
@@ -285,15 +314,13 @@ void handle_if(ast_type *node, Scope *current_scope) {
         printf("Error: Condition in 'if' must evaluate to an integer\n");
         exit(EXIT_FAILURE);
     }
+	
+    //print_all_scopes(current_scope); 
 
     if (condition.u.i) { 
-        current_scope = enter_scope(current_scope);
         executor(node->child[1], current_scope);    
-        current_scope = exit_scope(current_scope);  
-    } else if (node->child[2]) {
-        current_scope = enter_scope(current_scope);
+    } else {
         executor(node->child[2], current_scope);  
-        current_scope = exit_scope(current_scope); 
     }
 }
 
@@ -382,9 +409,12 @@ value_t handle_function_call(ast_type *node, Scope *current_scope) {
 
     function_t *f = (function_t *) fun->u.ptr;                                     
     Scope *func_scope = enter_scope(current_scope); 
-
+     
     executor(f->param_list, func_scope);      
-    return executor(f->body, func_scope); 
+    executor(f->body, func_scope); 
+    value_t result = func_scope->return_val;
+    exit_scope(func_scope);
+    return result;
 }
 
 
@@ -400,7 +430,3 @@ int map_type(int declared_type) {
             return -1;     // Tipo non supportato
     }
 }
-
-
-
-

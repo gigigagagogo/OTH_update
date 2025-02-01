@@ -14,4 +14,4 @@ a_new_one zip hanoi(whole_y n, chain origin, chain destination, chain temp){
 }	
 
 
-hanoi(n,^A^, ^B^, ^C^);
+hanoi(n,^A^, ^C^, ^B^);

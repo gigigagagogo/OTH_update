@@ -1,6 +1,1 @@
-whole_y a -> 5;
-whole_y b -> 6;
-a_new_one whole_y cd(whole_y a, whole_y b){
-	send_back(a+b);
-}
-throw_up(cd(a,b));
+throw_up(^\gms^);

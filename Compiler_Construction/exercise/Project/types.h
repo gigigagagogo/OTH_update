@@ -60,6 +60,8 @@ typedef struct Scope{
 	ht_str *symbolTable;
 	ht_str *functionTable;
 	struct Scope *parent;
+	value_t return_val;
+	int isReturn;
 }Scope;
 
 typedef struct {
@@ -79,7 +81,7 @@ enum ast_types{
 	_NEQUAL = 400, _GEQUAL = 401, _LEQUAL = 402, _EQUAL = 403, _PLUS = 404, _MINUS = 405, _MULTIPLY = 406, _DIVIDE = 407, _LESS = 408, _GREATER = 409, _FAI = 410, _AND = 411, _OR = 412,
 	
 	_STATEMENTS = 500, _NEWFUNC = 501, _CONTROLBLOCK = 503, _DECLARATION = 504, _ASSIGNMENT = 505, _FUNCALL = 508, _ARGLIST = 509,_ARGSLIST = 510, 
-	_OPTSTEP = 511, _PARENSTMT = 512, _EXPR = 513, _RANDO = 514, _GIMME = 515, _LIST_ACCESS =516, _LIST_ASSIGNMENT = 517, _SIZE_UP = 518, _JOIN_IN = 519, _PARAMLIST = 520, 
+	_OPTSTEP = 511, _PARENSTMT = 512, _EXPR = 513, _RANDO = 514, _GIMME = 515, _INDEX_ACCESS =516, _LIST_ASSIGNMENT = 517, _SIZE_UP = 518, _JOIN_IN = 519, _PARAMLIST = 520, 
 	_PARAMSLIST = 521
 };
 

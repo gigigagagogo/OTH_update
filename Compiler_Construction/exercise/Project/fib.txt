@@ -1,0 +1,30 @@
+a_new_one whole_y fibonacci(whole_y n){
+    go
+        imagine(n <= 0){
+            send_back(0);
+        }nah{
+            go
+                imagine(n --> 1){
+                    send_back(1);
+                }nah{
+                    send_back(fibonacci(n-1) + fibonacci(n-2));
+                }
+            all_set;
+        }
+    all_set;
+}
+
+a_new_one zip main(){
+    whole_y n;
+    throw_up(^Insert a number for the Fibonacci sequence:\gms^);
+    n -> gimme(whole_y);
+
+    throw_up(^\gmsFibonacci sequence for ^ + n + ^\gms^);
+    go
+	    one_by_one(i in (0, n, 1)){		
+    		throw_up(fibonacci(i) + ^ ^);
+	    }
+    all_set;
+    throw_up(^\gms^);
+}
+main();

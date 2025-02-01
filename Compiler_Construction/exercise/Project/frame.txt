@@ -1,56 +1,107 @@
-a_new_one zip drawFrame(sentence) {
-    whole_y maxLen -> 0;
-    whole_y size -> size_up(sentence);
-
+x$ Funzione per estrarre una sottostringa da una stringa $x
+a_new_one chain sub(chain str, whole_y start, whole_y length) {
+    x$ Controllo dei parametri e della validità della sottostringa $x
     go
-        one_by_one(i in (0, size, 1)) {
-            whole_y wordLen -> string_length(sentence[i]);
-            imagine(wordLen > maxLen) {
-                maxLen -> wordLen;
-            }
+        imagine((str --> ^^) || (start < 0) || (length < 0) || ((start + length) > size_up(str))) {
+            throw_up(^Error: Invalid substring range\gms^);
+            send_back(^^); 
         }
     all_set;
 
-    whole_y frameWidth -> maxLen + 4;
+    chain result -> ^^;
 
-    // Stampa la riga superiore della cornice
-    whole_y j -> 0;
-    go
-        as_long_as(j < frameWidth) {
-            throw_up(^*^);
-            j -> j + 1;
-        }
+    x$ Ciclo per copiare la sottostringa nella variabile `result` $x
+    go one_by_one (i in (start, start + length, 1)) {
+        result -> result + str[i];
+    }
     all_set;
-    throw_up(^\gms^);
 
-    go
-        one_by_one(i in (0, size, 1)) {
-            throw_up(^* ^ + sentence[i] + ^ ^);
-            whole_y spaceCount -> maxLen - string_length(sentence[i]);
-            go
-                as_long_as(spaceCount > 0) {
-                    throw_up(^ ^);
-                    spaceCount -> spaceCount - 1;
+    send_back(result);
+}
+
+x$ Funzione per dividere una stringa in parole $x
+a_new_one whole_y split(chain sentence, chain[100] words) {
+    whole_y num_words -> 0;
+    whole_y start -> 0;
+    whole_y end -> 0;
+
+    x$ Ciclo principale per identificare le parole $x
+    go 
+        one_by_one (i in (0, size_up(sentence), 1)) {
+            go 
+                imagine((sentence[i] --> ^ ^) || (i --> (size_up(sentence) - 1))) {
+                    go imagine(i --> (size_up(sentence) - 1)) {
+                        end -> i + 1;
+                    } nah {
+                        end -> i;
+                    }
+                    all_set;
+
+                    x$ Uso della funzione `sub` per estrarre le parole $x
+                    words[num_words] -> sub(sentence, start, end - start);
+                    num_words -> num_words + 1;
+                    start -> i + 1;
                 }
             all_set;
-            throw_up(^ *^\gms^);
         }
     all_set;
 
-    j -> 0;
-    go
-        as_long_as(j < frameWidth) {
+    send_back(num_words);
+}
+
+x$ Funzione principale per generare un frame attorno al testo $x
+a_new_one zip frame() {
+    x$ Input dell'utente $x
+    throw_up(^Please enter sentence: \gms^);
+    chain sentence -> gimme(chain);
+    whole_y number_words -> 0;
+    chain[100] words;
+
+    x$ Suddivisione della stringa in parole $x
+    number_words -> split(sentence, words);
+
+    whole_y max_len -> 0;
+
+    x$ Calcolo della lunghezza massima delle parole $x
+    go 
+        one_by_one (i in (0, number_words, 1)) {
+            go imagine(size_up(words[i]) > max_len) {
+                max_len -> size_up(words[i]);
+            }
+            all_set;
+        }
+    all_set;
+
+    x$ Stampa del bordo superiore del frame $x
+    go 
+        one_by_one (j in (0, max_len + 4, 1)) {
             throw_up(^*^);
-            j -> j + 1;
+        }
+    all_set;
+    throw_up(^\gms^);
+
+    x$ Stampa delle parole all'interno del frame $x
+    go 
+        one_by_one (i in (0, number_words, 1)) {
+            throw_up(^* ^ + words[i]);
+            go 
+                one_by_one (j in (size_up(words[i]), max_len, 1)) {
+                    throw_up(^ ^);
+                }
+            all_set;
+            throw_up(^ *\gms^);
+        }
+    all_set;
+
+    x$ Stampa del bordo inferiore del frame $x
+    go 
+        one_by_one (j in (0, (max_len + 4), 1)) {
+            throw_up(^*^);
         }
     all_set;
     throw_up(^\gms^);
 }
 
-a_new_one whole_y main() {
-    throw_up(^Please enter a sentence: \gms^);
-    chain[] sentence -> gimme(chain[]);
-
-    drawFrame(sentence);
-}
+x$ Chiamata alla funzione principale $x
+frame();
 

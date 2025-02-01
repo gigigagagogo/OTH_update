@@ -1,3 +1,15 @@
-whole_y a -> 5;
-a -> gimme(whole_y);
-throw_up(a);
+a_new_one chain test (){
+	whole_y a -> 5;
+	chain b -> ^ciao^;
+	go
+		imagine(a > 4){
+			throw_up(a);
+			send_back(2);
+		}nah{
+			send_back(7);
+		}
+	all_set;
+	throw_up(^test^);
+}
+
+throw_up(test());

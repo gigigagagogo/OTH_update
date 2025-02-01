@@ -1,5 +1,4 @@
 %{
-
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
@@ -123,7 +122,7 @@ control_block:
 if_block:
 	T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR
 	{
-		$$ = node2(_IF, $3, $6);
+		$$ = node3(_IF, $3, $6, NULL);
 	}
 	|T_IMAGINE T_LPAREN expression T_RPAREN T_LCURPAR statements T_RCURPAR T_NAH T_LCURPAR statements T_RCURPAR
     	{ 
@@ -156,8 +155,8 @@ statements:
 
 statement:
     declaration { $$ = $1; } 
-    | expression { $$ = $1; }
     | assignment { $$ = $1; }
+    | expression { $$ = $1; }
     | block	{ $$ = $1; } 
     | T_SENDBACK expression 	{ $$ = node1(_RETURN, $2); }    
     | T_THROWUP T_LPAREN expression T_RPAREN { $$ = node1(_PRINT, $3);  }
@@ -198,11 +197,10 @@ expression:
     | expression T_MULTIPLY expression { $$ = node2(_MULTIPLY, $1, $3);}
     | expression T_LESS expression { $$ = node2(_LESS, $1, $3); }
     | expression T_GREATER expression { $$ = node2(_GREATER, $1, $3); }
-    | expression T_FAI expression { $$ = node2(_FAI, $1, $3); }
     | expression T_EQUAL expression { $$ = node2(_EQUAL, $1, $3); }
     | T_LPAREN expression T_RPAREN  { $$ = node1(_PARENSTMT, $2); }
-    | T_IDENTIFIER '[' expression ']' { $$ = node2(_LIST_ACCESS, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
-    | T_SIZE_UP T_LPAREN T_IDENTIFIER T_RPAREN { $$ = node1(_SIZE_UP, node0(_IDENTIFIER)); $$->child[0]->val.s = $3; }
+    | T_IDENTIFIER '[' expression ']' { $$ = node2(_INDEX_ACCESS, node0(_IDENTIFIER), $3); $$->child[0]->val.s = $1; }
+    | T_SIZE_UP T_LPAREN expression T_RPAREN { $$ = node1(_SIZE_UP, $3); }
     | expression T_AND expression { $$ = node2(_AND, $1, $3); }
     | expression T_OR expression { $$ = node2(_OR, $1, $3); }	    
     | T_GIMME T_LPAREN types T_RPAREN { $$ = node1(_GIMME, $3); }		    
@@ -236,6 +234,8 @@ void yyerror(const char *s) {
     fprintf(stderr, "Errore alla riga %d: %s\n", yylineno, s);
 }
 
+
+
 void print_ast(ast_type *node, int depth) {
     if (!node) return;
 
@@ -247,14 +247,29 @@ void print_ast(ast_type *node, int depth) {
             printf("|   ");
     }
 
-    // Stampa il tipo e il valore del nodo
-    printf("%d", node->type); // Tipo del nodo
+    printf("%d", node->type); 
     if (node->type == _INT) {
         printf(": %d", node->val.i);
     } else if (node->type == _DOUBLE) {
-        printf(": %f", node->val.d);
-    } else if (node->type == _STRING || node->type == _IDENTIFIER) {
-        printf(": %s", node->val.s);
+        printf(": %f", node->val.d); 
+    }else if (node->type == _STRING || node->type == _IDENTIFIER) {
+        if (node->val.s) { // Verifica che la stringa non sia NULL
+            printf(": ");
+            // Processa la stringa per escapare i caratteri speciali
+            for (const char *c = node->val.s; *c != '\0'; c++) {
+                if (*c == '\n') {
+                    printf("\\gms"); // Escapa il newline
+                } else if (*c == '\t') {
+                    printf("\\so"); // Escapa il tab
+                } else if (*c == '\\') {
+                    printf("\\\\"); // Escapa il backslash
+                } else {
+                    putchar(*c); // Stampa normalmente gli altri caratteri
+                }
+            }
+        } else {
+            printf(": NULL");    
+        }
     }
 
    printf("\n");
@@ -269,7 +284,7 @@ void print_ast(ast_type *node, int depth) {
 
 value_t executor(ast_type *node, Scope *current_scope) {
     value_t result = {0}; // Inizializza un valore predefinito
-    if (!node) {
+    if (!node || current_scope->isReturn) {
         return result;
     }
 
@@ -452,7 +467,8 @@ value_t executor(ast_type *node, Scope *current_scope) {
 		break;
 	}
 	case _RETURN: {
-		result = executor(node->child[0], current_scope);
+		current_scope->return_val = executor(node->child[0], current_scope);
+		current_scope->isReturn = 1;
 		break;
 	}
 	
@@ -468,7 +484,6 @@ value_t executor(ast_type *node, Scope *current_scope) {
 		break;	
 	}
 	case _RANDO: {
-		
 		int min = executor(node->child[0], current_scope).u.i;
     		int max = executor(node->child[1], current_scope).u.i;
     		if (min > max) {
@@ -507,25 +522,43 @@ value_t executor(ast_type *node, Scope *current_scope) {
     		break;
 	}
 
-	case _LIST_ACCESS: {
-    		char *list_name = node->child[0]->val.s;
-    		value_t *list_value = lookup(current_scope, list_name);
+	case _INDEX_ACCESS: {
+    		char *var_name = node->child[0]->val.s; // Nome della variabile
+    		value_t *var_value = lookup(current_scope, var_name); // Cerca la variabile nel simbolo corrente
 
-    		if (!list_value || list_value->type != _LIST_TYPE) {
-        		printf("Error: '%s' is not a list\n", list_name);
+    		if (!var_value) {
+        		printf("Error: Variable '%s' not declared\n", var_name);
         		exit(EXIT_FAILURE);
     		}
 
-    		int index = executor(node->child[1], current_scope).u.i;
+    		int index = executor(node->child[1], current_scope).u.i; // Valore dell'indice
 
-    		if (index < 0 || index >= list_value->u.list->size) {
-        		printf("Error: Index out of bounds for list '%s'\n", list_name);
+    		if (var_value->type == _LIST_TYPE) {
+        		if (index < 0 || index >= var_value->u.list->size) {
+            			printf("Error: Index out of bounds for list '%s'\n", var_name);
+            			exit(EXIT_FAILURE);
+        		}
+        		result = var_value->u.list->elements[index]; // Accedi all'elemento della lista
+
+    		} else if (var_value->type == 2) { // Tipo 2 rappresenta le stringhe
+        		if (index < 0 || index >= strlen(var_value->u.s)) {
+            			printf("Error: Index out of bounds for string '%s'\n", var_name);
+            			exit(EXIT_FAILURE);
+        		}
+        		result.type = 2; // Tipo stringa
+        		result.u.s = malloc(2); // Un carattere + terminatore
+        		if (!result.u.s) {
+            			printf("Error: Memory allocation failed\n");
+            			exit(EXIT_FAILURE);
+        		}
+        		result.u.s[0] = var_value->u.s[index];
+        		result.u.s[1] = '\0'; // Terminatore
+    		} else {
+        		printf("Error: Variable '%s' is neither a list nor a string\n", var_name);
         		exit(EXIT_FAILURE);
     		}
-
-    		result = list_value->u.list->elements[index];
     		break;
-	}
+}
 
 	case _LIST_ASSIGNMENT: {
     		char *list_name = node->child[0]->val.s;
@@ -572,20 +605,25 @@ value_t executor(ast_type *node, Scope *current_scope) {
 	}
 
 	case _SIZE_UP: {
-		char *list_name = node->child[0]->val.s;
-		
-		
-		//print_all_scopes(current_scope);		
 
-		value_t *list_value = lookup(current_scope, list_name);
-	
-    		if (!list_value || list_value->type != _LIST_TYPE) {
-        		printf("Error: '%s' is not a list\n", list_name);
+		char *var_name = node->child[0]->val.s;
+    		value_t *var_value = lookup(current_scope, var_name);
+
+    		if (!var_value) {
+        		printf("Error: Variable '%s' not found\n", var_name);
         		exit(EXIT_FAILURE);
     		}
 
-    		result.type = 0; 
-    		result.u.i = list_value->u.list->size;
+    		if (var_value->type == _LIST_TYPE) {
+        		result.type = 0; 
+        		result.u.i = var_value->u.list->size;
+    		} else if (var_value->type == 2) { // Stringa
+        		result.type = 0;
+        		result.u.i = strlen(var_value->u.s); // Lunghezza della stringa
+    		} else {
+        		printf("Error: 'size_up' not applicable to type of '%s'\n", var_name);
+        		exit(EXIT_FAILURE);
+    		}
     		break;
 	}	
 
