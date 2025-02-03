@@ -1,0 +1,5 @@
+go
+as_long_as (7<9){
+	throw_up(^ ^);
+}
+all_set;

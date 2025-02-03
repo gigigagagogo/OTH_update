@@ -112,4 +112,7 @@ void s_push(node_s **head, value_t data);
 value_t s_pop(node_s **head);
 int s_empty(node_s **head);
 
+//Opt tree
+void optimize_ast(ast_type *node);
+
 #endif // TYPES_H

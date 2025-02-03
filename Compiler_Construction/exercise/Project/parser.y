@@ -706,9 +706,13 @@ int main(int argc, char **argv) {
     yyparse();
     
     if (root) {
-        printf("AST:\n");
+	printf("AST: \n");
+	print_ast(root,0);
+	printf("\n\n\n");	
+	optimize_ast(root);
+	printf("Optimized AST: \n");
         print_ast(root, 0);
-
+     
         printf("\nExecution of AST:\n");
         
 	global_scope = enter_scope(NULL);

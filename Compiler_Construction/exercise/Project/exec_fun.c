@@ -4,7 +4,7 @@ value_t handle_plus(value_t left, value_t right, value_t result){
    		if (left.type == 0 && right.type == 0){
 			result.type = 0;
 			result.u.i = left.u.i + right.u.i;
-	}else if (left.type == 1 && right.type == 1){
+		}else if (left.type == 1 && right.type == 1){
        			result.type = 1;
        			result.u.d = left.u.d + right.u.d;
 		}else if (left.type == 2 && right.type == 0){

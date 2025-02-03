@@ -57,7 +57,7 @@ a_new_one zip frame() {
     throw_up(^Please enter sentence: \gms^);
     chain sentence -> gimme(chain);
     whole_y number_words -> 0;
-
+    throw_up(^\gms^);
     x$ Suddivisione della stringa in parole $x
     number_words -> split(sentence);
     whole_y max_len -> 0;
