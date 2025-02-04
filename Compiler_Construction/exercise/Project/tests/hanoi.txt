@@ -1,4 +1,4 @@
-whole_y n -> 3;	
+whole_y n -> 10;	
 
 a_new_one zip hanoi(whole_y n, chain origin, chain destination, chain temp){
 	go

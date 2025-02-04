@@ -1,6 +1,5 @@
 chain[100] words;
 
-x$ Funzione per estrarre una sottostringa da una stringa $x
 a_new_one chain sub(chain str, whole_y start, whole_y length) {
     x$ Controllo dei parametri e della validità della sottostringa $x
     go
@@ -21,7 +20,6 @@ a_new_one chain sub(chain str, whole_y start, whole_y length) {
     send_back(result);
 }
 
-x$ Funzione per dividere una stringa in parole $x
 a_new_one whole_y split(chain sentence) {
     whole_y num_words -> 0;
     whole_y start -> 0;
@@ -39,7 +37,6 @@ a_new_one whole_y split(chain sentence) {
                     }
                     all_set;
 
-                    x$ Uso della funzione `sub` per estrarre le parole $x
                     words[num_words] -> sub(sentence, start, end - start);
                     num_words -> num_words + 1;
                     start -> i + 1;
@@ -51,17 +48,14 @@ a_new_one whole_y split(chain sentence) {
     send_back(num_words);
 }
 
-x$ Funzione principale per generare un frame attorno al testo $x
 a_new_one zip frame() {
     x$ Input dell'utente $x
     throw_up(^Please enter sentence: \gms^);
     chain sentence -> gimme(chain);
     whole_y number_words -> 0;
     throw_up(^\gms^);
-    x$ Suddivisione della stringa in parole $x
     number_words -> split(sentence);
     whole_y max_len -> 0;
-    x$ Calcolo della lunghezza massima delle parole $x
     go 
         one_by_one (i in (0, number_words, 1)) {	
             go 
@@ -71,7 +65,6 @@ a_new_one zip frame() {
             all_set;
         }
     all_set;
-    x$ Stampa del bordo superiore del frame $x
     go 
         one_by_one (j in (0, max_len + 4, 1)) {
             throw_up(^*^);
@@ -79,7 +72,6 @@ a_new_one zip frame() {
     all_set;
     throw_up(^\gms^);
 
-    x$ Stampa delle parole all'interno del frame $x
     go 
         one_by_one (i in (0, number_words, 1)) {
             throw_up(^* ^ + words[i]);
@@ -92,7 +84,6 @@ a_new_one zip frame() {
         }
     all_set;
 
-    x$ Stampa del bordo inferiore del frame $x
     go 
         one_by_one (j in (0, (max_len + 4), 1)) {
             throw_up(^*^);
@@ -101,6 +92,5 @@ a_new_one zip frame() {
     throw_up(^\gms^);
 }
 
-x$ Chiamata alla funzione principale $x
 frame();
 

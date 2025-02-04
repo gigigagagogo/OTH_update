@@ -5,17 +5,18 @@
     #include "types.h"
     #include "math.h"    
     #include "exec_fun.h"
-    #include <time.h>
-    int yydebug = 1;
-    extern int yylineno;
-    void yyerror (const char *msg); 
-    int yylex(void);
-    int var_get(char *id);
-    int var_set(char *id, int val);
-    ast_type *root = NULL; 
-    extern FILE *yyin;
-    node_s *head = NULL;
 
+    int yydebug = 1; // Enables debug mode for parsing
+    extern int yylineno; // Keeps track of the line number in the source file
+    void yyerror (const char *msg); // Error handling function for the parser
+    int yylex(void); // Function prototype for the lexer
+    int var_get(char *id); // Function prototype to retrieve variable values
+    int var_set(char *id, int val); // Function prototype to set variable values
+    ast_type *root = NULL; // Root of the abstract syntax tree (AST)
+    extern FILE *yyin; // File pointer for input
+    node_s *head = NULL; // Pointer to the top of the stack
+
+// Function to create a node with no children
 ast_type *node0(int type){
  	ast_type *t = calloc(1, sizeof(ast_type)); 
 	if ( t == NULL ){
@@ -26,6 +27,7 @@ ast_type *node0(int type){
 	return t;
 } 
 
+// Function to create a node with one child
 ast_type *node1(int type, ast_type *child0){
  	ast_type *t = node0(type); 
 	t -> type = type;
@@ -33,6 +35,7 @@ ast_type *node1(int type, ast_type *child0){
 	return t;
 } 
 
+// Function to create a node with two children
 ast_type *node2(int type, ast_type *child0, ast_type *child1){
 	ast_type *t = node0(type);
 	t -> type = type;
@@ -41,6 +44,7 @@ ast_type *node2(int type, ast_type *child0, ast_type *child1){
 	return t;
 }
 
+// Function to create a node with three children
 ast_type *node3(int type, ast_type *child0, ast_type *child1, ast_type *child2){
 	ast_type *t = node0(type);                                                        
         t -> type = type;                                                                 
@@ -50,6 +54,7 @@ ast_type *node3(int type, ast_type *child0, ast_type *child1, ast_type *child2){
         return t;    
 }
 
+// Function to create a node with four children
 ast_type *node4(int type, ast_type *child0, ast_type *child1, ast_type *child2, ast_type *child3){
         ast_type *t = node0(type);
         t -> type = type;
@@ -60,6 +65,7 @@ ast_type *node4(int type, ast_type *child0, ast_type *child1, ast_type *child2, 
         return t;
 }
 
+// Global scope pointer, used to track the current scope in the program
 Scope *global_scope = NULL;
 
 %}
@@ -283,7 +289,7 @@ void print_ast(ast_type *node, int depth) {
 }
 
 value_t executor(ast_type *node, Scope *current_scope) {
-    value_t result = {0}; // Inizializza un valore predefinito
+    value_t result = {0}; 
     if (!node || current_scope->isReturn) {
         return result;
     }
@@ -376,50 +382,13 @@ value_t executor(ast_type *node, Scope *current_scope) {
 	}
 
 	case _AND: {
-    		value_t left = executor(node->child[0], current_scope);
-    		if (left.type != 0) {
-        		printf("Error: Logical AND requires integer operands\n");
-        		exit(EXIT_FAILURE);
-    		}
-    		if (!left.u.i) {
-        		result.type = 0;
-        		result.u.i = 0;
-        		break;
-    		}
-
-    		value_t right = executor(node->child[1], current_scope);
-    		if (right.type != 0) {
-        		printf("Error: Logical AND requires integer operands\n");
-        		exit(EXIT_FAILURE);
-    		}
-
-    		result.type = 0;
-    		result.u.i = right.u.i;
-    		break;
+    		result = handle_and(node, current_scope, result);
+		break;
 	}
 
 	case _OR: {
-    		value_t left = executor(node->child[0], current_scope);
-
-    		if (left.type != 0) {
-			printf("Error: Logical OR requires integer operands\n");
-			exit(EXIT_FAILURE);
-		}
-	        if (left.u.i) {
-        		result.type = 0;
-        		result.u.i = 1;
-        		break;
-    		}
-
-    		value_t right = executor(node->child[1], current_scope);
-    		if (right.type != 0) {
-        		printf("Error: Logical OR requires integer operands\n");
-        		exit(EXIT_FAILURE);
-    		}
-
-    		result.type = 0;
-    		result.u.i = right.u.i;
-    		break;
+    		result = handle_or(node, current_scope, result);
+		break;
 	}
 	case _PARENSTMT:
 		result = executor(node->child[0], current_scope);	
@@ -484,50 +453,12 @@ value_t executor(ast_type *node, Scope *current_scope) {
 		break;	
 	}
 	case _RANDO: {
-		int min = executor(node->child[0], current_scope).u.i;
-    		int max = executor(node->child[1], current_scope).u.i;
-    		if (min > max) {
-        		printf("Error: Invalid range for random()\n");
-        		exit(EXIT_FAILURE);
-    		}
-    		srand(time(NULL));
-    		result.type = 0;   
-    		result.u.i = (rand() % (max - min + 1)) + min;
-    		break;	
+    		result = handle_rando(node, current_scope, result);
+		break;	
 	}
 	case _GIMME: {
-	    	int input_type = node->child[0]->type; // Tipo specificato
-    		if (input_type == _INT_TYPE) {
-        		int value;
-        		printf("Gimme a number: "); // Prompt
-        		scanf("%d", &value);
-        		result.type = 0;
-        		result.u.i = value;
-    		} else if (input_type == _DOUBLE_TYPE) {
-        		double value;
-        		printf("Gimme a decimal: "); // Prompt
-        		scanf("%lf", &value);
-        		result.type = 1;
-        		result.u.d = value;
-    		} else if (input_type == _STRING_TYPE) {
-    			char buffer[1024]; // Buffer più grande per supportare righe più lunghe
-
-        		if (fgets(buffer, sizeof(buffer), stdin)) {
-            			size_t len = strlen(buffer);
-            			if (len > 0 && buffer[len - 1] == '\n') {
-                			buffer[len - 1] = '\0'; // Rimuove il newline alla fine
-            			}
-            			result.type = 2;
-            			result.u.s = strdup(buffer);
-			} else {
-        			printf("Error: Failed to read string input\n");
-        			exit(EXIT_FAILURE);
-    			}
-		} else {
-			printf("Error: Unsupported type for gimme\n");
-			exit(EXIT_FAILURE);
-		}
-    		break;
+    		result = handle_gimme(node, result);
+		break;
 		
 	}
 	case _INDEX_ACCESS: {
@@ -536,146 +467,18 @@ value_t executor(ast_type *node, Scope *current_scope) {
 	}
 
 	case _LIST_ASSIGNMENT: {
-    		char *list_name = node->child[0]->val.s;
-    		value_t *list_value = lookup(current_scope, list_name);
+    		handle_list_assignment(node, current_scope);
+		break;
+	}
 
-		//print_all_scopes(current_scope);
-
-    		if (!list_value || list_value->type != _LIST_TYPE) {
-        		printf("Error: '%s' is not a list\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		int index = executor(node->child[1], current_scope).u.i;
-
-    		if (index < 0 || index >= list_value->u.list->capacity) {
-        		printf("Error: Index %d out of bounds for list '%s'\n", index, list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		value_t new_value = executor(node->child[2], current_scope);
-    		if (new_value.type != map_type(list_value->u.list->type)) {
-        		printf("Error: Type mismatch in assignment to list '%s'\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-		if (new_value.type == 2) { // Tipo stringa
-    	    		new_value.u.s = strdup(new_value.u.s);
-		        if (!new_value.u.s) {
-            			printf("Error: Memory allocation failed for string\n");
-            			exit(EXIT_FAILURE);
-        		}
-    		}
-
-
-    		// Assegna il valore all'indice
-    		list_value->u.list->elements[index] = new_value;
-
-    		// Aggiorna la dimensione logica della lista se necessario
-    		if (index >= list_value->u.list->size) {
-        		list_value->u.list->size = index + 1;
-    		}
-		//print_all_scopes(current_scope);
+	case _SIZE_UP: {
+		result = handle_size_up(node, current_scope, result);
     		break;
 	}
 
-case _SIZE_UP: {
-    // Verifica che il nodo figlio esista
-    if (node->child[0] == NULL) {
-        printf("Error: 'size_up' called on a NULL node\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Verifica che il nodo contenga un identificatore o un elemento accessibile
-    if (node->child[0]->type != _IDENTIFIER && node->child[0]->type != _INDEX_ACCESS) {
-        printf("Error: 'size_up' can only be used with identifiers or index access\n");
-        exit(EXIT_FAILURE);
-    }
-
-    if (node->child[0]->type == _IDENTIFIER) {
-        // Caso: Variabile diretta
-        char *var_name = node->child[0]->val.s;
-        value_t *var_value = lookup(current_scope, var_name);
-
-        if (!var_value) {
-            printf("Error: Variable '%s' not found\n", var_name);
-            exit(EXIT_FAILURE);
-        }
-
-        if (var_value->type == _LIST_TYPE) {
-            result.type = 0; // Tipo intero
-            result.u.i = var_value->u.list->size; // Restituisci la dimensione della lista
-        } else if (var_value->type == 2) { // Stringa
-            result.type = 0; // Tipo intero
-            result.u.i = strlen(var_value->u.s); // Lunghezza della stringa
-        } else {
-            printf("Error: 'size_up' not applicable to type of '%s'\n", var_name);
-            exit(EXIT_FAILURE);
-        }
-    } else if (node->child[0]->type == _INDEX_ACCESS) {
-        // Caso: Accesso a un elemento di una lista
-        char *list_name = node->child[0]->child[0]->val.s; // Nome della lista
-        value_t *list_value = lookup(current_scope, list_name);
-
-        if (!list_value || list_value->type != _LIST_TYPE) {
-            printf("Error: '%s' is not a list\n", list_name);
-            exit(EXIT_FAILURE);
-        }
-
-        int index = executor(node->child[0]->child[1], current_scope).u.i; // Valore dell'indice
-        if (index < 0 || index >= list_value->u.list->size) {
-            printf("Error: Index out of bounds for list '%s'\n", list_name);
-            exit(EXIT_FAILURE);
-        }
-
-        // Ottieni l'elemento della lista e verifica se è una stringa
-        value_t element = list_value->u.list->elements[index];
-        if (element.type != 2) {
-            printf("Error: Element at index %d in list '%s' is not a string\n", index, list_name);
-            exit(EXIT_FAILURE);
-        }
-
-        result.type = 0; // Tipo intero
-        result.u.i = strlen(element.u.s); // Lunghezza della stringa
-    }
-
-    break;
-}
-
 	case _JOIN_IN: {
-    		char *list_name = node->child[0]->val.s;
-
-    		value_t *list_value = lookup(current_scope, list_name);
-    		if (!list_value || list_value->type != _LIST_TYPE) {
-        		printf("Error: '%s' is not a list\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		if (list_value->u.list->size >= list_value->u.list->capacity) {
-        		printf("Error: List '%s' is full\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-    		value_t new_value = executor(node->child[1], current_scope);
-
-    		if (new_value.type != map_type(list_value->u.list->type)) {
-        		printf("Error: Type mismatch in append to list '%s'\n", list_name);
-        		exit(EXIT_FAILURE);
-    		}
-
-		if (new_value.type == 2) { // 2 rappresenta il tipo stringa
-     			new_value.u.s = strdup(new_value.u.s);
-        		if (!new_value.u.s) {
-            			printf("Error: Memory allocation failed for string append\n");
-            			exit(EXIT_FAILURE);
-        		}
-    		}
-
-    		list_value->u.list->elements[list_value->u.list->size] = new_value;
-
-    		list_value->u.list->size++;
-
-    		break;
+    		handle_join_in(node, current_scope);
+		break;
 	}
 
 
