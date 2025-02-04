@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include "exec_fun.h"
 
 value_t handle_plus(value_t left, value_t right, value_t result){
@@ -372,6 +373,31 @@ void handle_for(ast_type *node, Scope *current_scope) {
     current_scope = exit_scope(loop_scope);
 }
 
+
+// Controlla se un `return` esiste fuori da blocchi condizionali
+bool has_return(ast_type *node) {
+    if (!node) return false;
+
+    // Se troviamo un `return` e non è dentro un `if`, `while` o `for`, è valido
+    if (node->type == _RETURN) {
+        return true;
+    }
+
+    // Se è un `if`, `while` o `for`, allora il `return` potrebbe non essere sempre eseguito
+    if (node->type == _IF || node->type == _WHILE || node->type == _FOR) {
+        return false;
+    }
+
+    // Controlla ricorsivamente nei figli
+    for (int i = 0; i < MAX_CHILD; i++) {
+        if (has_return(node->child[i])) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void handle_new_function(ast_type *node, Scope *current_scope) {
     char *func_name = node->child[1]->val.s;
 
@@ -389,6 +415,13 @@ void handle_new_function(ast_type *node, Scope *current_scope) {
     new_func->return_type = node->child[0]->type; 
     new_func->param_list = node->child[2];       
     new_func->body = node->child[3];            
+
+    if(new_func->return_type != _VOID_TYPE){
+	    if(!has_return(new_func->body)){
+		    printf("Error: Function '%s' must have a return statement!\n", func_name);
+		    exit(EXIT_FAILURE);
+	    }
+    } 
 
     value_t func_val;
     func_val.type = 3; // Tipo personalizzato per le funzioni

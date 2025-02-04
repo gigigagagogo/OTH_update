@@ -12,6 +12,7 @@ a_new_one whole_y fibonacci(whole_y n){
             all_set;
         }
     all_set;
+    send_back 0;
 }
 
 a_new_one zip main(){

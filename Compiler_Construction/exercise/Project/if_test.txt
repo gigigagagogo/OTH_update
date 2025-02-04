@@ -1,5 +1,5 @@
 go
-as_long_as (7<9){
-	throw_up(^ ^);
+imagine((5<4) || (3<2)){
+	throw_up(^ciao^);
 }
 all_set;

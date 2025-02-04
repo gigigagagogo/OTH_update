@@ -1,29 +1,6 @@
 #include "types.h"
 #include <stdbool.h>
 
-int evaluate_constant_expression(ast_type *node) {
-    if (!node) return 0;
-
-    switch (node->type) {
-        case _INT:
-            return node->val.i;
-        case _GREATER:
-            return evaluate_constant_expression(node->child[0]) > evaluate_constant_expression(node->child[1]);
-        case _LESS:
-            return evaluate_constant_expression(node->child[0]) < evaluate_constant_expression(node->child[1]);
-        case _GEQUAL:
-            return evaluate_constant_expression(node->child[0]) >= evaluate_constant_expression(node->child[1]);
-        case _LEQUAL:
-            return evaluate_constant_expression(node->child[0]) <= evaluate_constant_expression(node->child[1]);
-        case _EQUAL:
-            return evaluate_constant_expression(node->child[0]) == evaluate_constant_expression(node->child[1]);
-        case _NEQUAL:
-            return evaluate_constant_expression(node->child[0]) != evaluate_constant_expression(node->child[1]);
-        default:
-            return 0; // Se l'espressione non è costante, ritorniamo 0 per sicurezza
-    }
-}
-
 
 void optimize_ast(ast_type *node) {
     if (!node) return ;
@@ -128,23 +105,6 @@ void optimize_ast(ast_type *node) {
             }
             break;
 	
-	case _WHILE:
-    if (node->child[0] && node->child[0]->type == _INT) {
-        int condition_value = evaluate_constant_expression(node->child[0]);
-        if (condition_value == 0) {
-            printf("[OPTIMIZATION] Removing dead while loop.\n");
-            free(node->child[0]);
-            free(node->child[1]);
-            node->type = _STATEMENTS;
-            node->child[0] = NULL;
-            node->child[1] = NULL;
-        } else if (condition_value == 1) {
-            printf("[OPTIMIZATION] Unrolling infinite while loop.\n");
-            *node = *(node->child[1]); 
-        }
-    }
-    break;
-
 	
 	case _FOR:
 	    if (node->child[1] && node->child[1]->child[0] && node->child[1]->child[1] && node->child[1]->child[2]) {
@@ -170,7 +130,121 @@ void optimize_ast(ast_type *node) {
     	}
     	break;
 
-    }
+	case _AND:
+            if (node->child[0] && node->child[1]) {
+                if (node->child[0]->type == _INT && node->child[1]->type == _INT) {
+                    node->type = _INT;
+                    node->val.i = node->child[0]->val.i && node->child[1]->val.i;
+                    free(node->child[0]);
+                    free(node->child[1]);
+                    node->child[0] = NULL;
+                    node->child[1] = NULL;
+                }
+            }
+            break;
 
+        case _OR:
+            if (node->child[0] && node->child[1]) {
+                if (node->child[0]->type == _INT && node->child[1]->type == _INT) {
+                    node->type = _INT;
+                    node->val.i = node->child[0]->val.i || node->child[1]->val.i;
+                    free(node->child[0]);
+                    free(node->child[1]);
+                    node->child[0] = NULL;
+                    node->child[1] = NULL;
+                }
+            }
+            break;
+
+	case _LESS:
+    		if (node->child[0] && node->child[1] && node->child[0]->type == _INT && node->child[1]->type == _INT) {
+       			node->type = _INT;
+       			node->val.i = node->child[0]->val.i < node->child[1]->val.i;
+    		}
+    		break;
+	
+	case _GREATER:
+    		if (node->child[0] && node->child[1] && node->child[0]->type == _INT && node->child[1]->type == _INT) {
+       			node->type = _INT;
+       			node->val.i = node->child[0]->val.i > node->child[1]->val.i;
+    		}
+    		break;
+	case _GEQUAL:	
+    		if (node->child[0] && node->child[1] && node->child[0]->type == _INT && node->child[1]->type == _INT) {
+       			node->type = _INT;
+       			node->val.i = node->child[0]->val.i >= node->child[1]->val.i;
+    		}
+    		break;
+	case _LEQUAL:
+    		if (node->child[0] && node->child[1] && node->child[0]->type == _INT && node->child[1]->type == _INT) {
+       			node->type = _INT;
+       			node->val.i = node->child[0]->val.i <= node->child[1]->val.i;
+    		}
+    		break;
+	case _EQUAL:	
+    		if (node->child[0] && node->child[1] && node->child[0]->type == _INT && node->child[1]->type == _INT) {
+       			node->type = _INT;
+       			node->val.i = node->child[0]->val.i == node->child[1]->val.i;
+    		}
+    		break;
+	case _NEQUAL:	
+    		if (node->child[0] && node->child[1] && node->child[0]->type == _INT && node->child[1]->type == _INT) {
+       			node->type = _INT;
+       			node->val.i = node->child[0]->val.i != node->child[1]->val.i;
+    		}
+    		break;
+	case _IF:
+            if (node->child[0] && node->child[0]->type == _INT) {
+                int condition_value = node->child[0]->val.i;
+                ast_type *node_to_keep = NULL;
+
+                if (condition_value) {
+                    printf("[OPTIMIZATION] Removing unreachable else branch.\n");
+                    node_to_keep = node->child[1];
+                    free(node->child[2]);  
+                    node->child[2] = NULL;
+                } else {
+                    if (node->child[2]) {
+                        printf("[OPTIMIZATION] Replacing if with else block.\n");
+                        node_to_keep = node->child[2];
+                    } else {
+                        printf("[OPTIMIZATION] Removing dead if statement.\n");
+                        free(node->child[1]);
+                        free(node->child[0]);
+                        node->type = _STATEMENTS;
+                        node->child[0] = NULL;
+                        node->child[1] = NULL;
+                        node->child[2] = NULL;
+                        return;
+                    }
+                    free(node->child[1]);
+                    node->child[1] = NULL;
+                }
+
+                free(node->child[0]);
+                node->child[0] = NULL;
+
+                if (node_to_keep) {
+                    *node = *node_to_keep;
+                }
+            }
+            break;
+    	case _WHILE:
+            if (node->child[0] && node->child[0]->type == _INT) {
+                int condition_value = node->child[0]->val.i;
+                if (condition_value == 0) {
+                    printf("[OPTIMIZATION] Removing dead while loop.\n");
+                    free(node->child[0]);
+                    free(node->child[1]);
+                    node->type = _STATEMENTS;
+                    node->child[0] = NULL;
+                    node->child[1] = NULL;
+                }
+            }
+            break;
+	
+
+	
+	}
 }
 
