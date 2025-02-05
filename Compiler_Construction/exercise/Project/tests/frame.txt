@@ -1,7 +1,6 @@
 chain[100] words;
 
 a_new_one chain sub(chain str, whole_y start, whole_y length) {
-    x$ Controllo dei parametri e della validità della sottostringa $x
     go
         imagine((str --> ^^) || (start < 0) || (length < 0) || ((start + length) > size_up(str))) {
             throw_up(^Error: Invalid substring range\gms^);
@@ -11,7 +10,6 @@ a_new_one chain sub(chain str, whole_y start, whole_y length) {
 
     chain result -> ^^;
 
-    x$ Ciclo per copiare la sottostringa nella variabile `result` $x
     go one_by_one (i in (start, start + length, 1)) {
         result -> result + str[i];
     }
@@ -25,7 +23,6 @@ a_new_one whole_y split(chain sentence) {
     whole_y start -> 0;
     whole_y end -> 0;
 
-    x$ Ciclo principale per identificare le parole $x
     go 
         one_by_one (i in (0, size_up(sentence), 1)) {
             go 
@@ -49,7 +46,6 @@ a_new_one whole_y split(chain sentence) {
 }
 
 a_new_one zip frame() {
-    x$ Input dell'utente $x
     throw_up(^Please enter sentence: \gms^);
     chain sentence -> gimme(chain);
     whole_y number_words -> 0;

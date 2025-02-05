@@ -1,5 +1,27 @@
 go
-imagine((5<4) || (5<3)){
-	throw_up(^a\gms^);
-}
+	imagine((5<4) || (9<5)){
+		throw_up(^Fail\gms^);
+	}nah{
+		
+		go
+			one_by_one(i in (5,5,1)){
+				throw_up(^Fail\gms^);
+			}
+		all_set;
+		go
+			
+			imagine ((6>4) && (3>2)){	
+				throw_up((3+5+6+7+2+1) + ^\gms^);
+			}nah{
+				throw_up(^Fail\gms^);
+			}
+		all_set;
+		
+	}
+all_set;
+
+go
+	as_long_as (6<4){
+		throw_up(^Fail\gms^);
+	}
 all_set;

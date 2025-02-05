@@ -241,11 +241,10 @@ void yyerror(const char *s) {
 }
 
 
-
+// Function to print the AST
 void print_ast(ast_type *node, int depth) {
     if (!node) return;
 
-    // Stampa l'indentazione
     for (int i = 0; i < depth; i++) {
         if (i == depth - 1)
             printf("|-- ");
@@ -259,18 +258,18 @@ void print_ast(ast_type *node, int depth) {
     } else if (node->type == _DOUBLE) {
         printf(": %f", node->val.d); 
     }else if (node->type == _STRING || node->type == _IDENTIFIER) {
-        if (node->val.s) { // Verifica che la stringa non sia NULL
+        if (node->val.s) {
             printf(": ");
-            // Processa la stringa per escapare i caratteri speciali
-            for (const char *c = node->val.s; *c != '\0'; c++) {
+            
+	  for (const char *c = node->val.s; *c != '\0'; c++) {
                 if (*c == '\n') {
-                    printf("\\gms"); // Escapa il newline
+                    printf("\\gms"); 
                 } else if (*c == '\t') {
-                    printf("\\so"); // Escapa il tab
+                    printf("\\so"); 
                 } else if (*c == '\\') {
-                    printf("\\\\"); // Escapa il backslash
+                    printf("\\\\"); 
                 } else {
-                    putchar(*c); // Stampa normalmente gli altri caratteri
+                    putchar(*c); 
                 }
             }
         } else {
@@ -280,8 +279,7 @@ void print_ast(ast_type *node, int depth) {
 
    printf("\n");
 
-    // Stampa i figli ricorsivamente
-    for (int i = 0; i < MAX_CHILD; i++) { // Supponendo massimo 3 figli
+    for (int i = 0; i < MAX_CHILD; i++) { 
         if (node->child[i]) {
             print_ast(node->child[i], depth + 1);
         }
@@ -525,7 +523,6 @@ int main(int argc, char **argv) {
      
     }
 
-    // Chiudi il file
     fclose(file);
 
     return 0;
